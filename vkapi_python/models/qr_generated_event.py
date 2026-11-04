@@ -11,19 +11,25 @@ T = TypeVar("T", bound="QRGeneratedEvent")
 
 @_attrs_define
 class QRGeneratedEvent:
-    """A QR login started, or VK expired the QR and the gateway issued a new one. No QR in it.
+    """A QR login started, or VK expired the QR and the gateway issued a new one
+    (1.4.0: with the QR). Show `qrcode`, or draw your own QR of `qrLink`.
 
-    Attributes:
-        type_ (Literal['QRGenerated']):
-        user_id (str): The account id (`userID` and `instanceID` are the same) Example:
-            6f1c2d4e-8b3e-4035-ba87-3f96a0e3f5c0.
-        instance_id (str): The account id (`userID` and `instanceID` are the same) Example:
-            6f1c2d4e-8b3e-4035-ba87-3f96a0e3f5c0.
-        instance_name (str): The account name Example: retail-12-vk-34.
-        event_timestamp (int): Unix time in seconds, set when the event happened; a retry keeps it Example: 1793001234.
+        Attributes:
+            type_ (Literal['QRGenerated']):
+            qrcode (str): A 256x256 PNG data URI of `qrLink`, the same image `GET /session/qr` serves Example:
+                data:image/png;base64,iVBORw0KGgo....
+            qr_link (str): VK's login link the QR encodes Example: https://qr.vk.ru/ca?q=....
+            user_id (str): The account id (`userID` and `instanceID` are the same) Example:
+                6f1c2d4e-8b3e-4035-ba87-3f96a0e3f5c0.
+            instance_id (str): The account id (`userID` and `instanceID` are the same) Example:
+                6f1c2d4e-8b3e-4035-ba87-3f96a0e3f5c0.
+            instance_name (str): The account name Example: retail-12-vk-34.
+            event_timestamp (int): Unix time in seconds, set when the event happened; a retry keeps it Example: 1793001234.
     """
 
     type_: Literal["QRGenerated"]
+    qrcode: str
+    qr_link: str
     user_id: str
     instance_id: str
     instance_name: str
@@ -32,6 +38,10 @@ class QRGeneratedEvent:
 
     def to_dict(self) -> dict[str, Any]:
         type_ = self.type_
+
+        qrcode = self.qrcode
+
+        qr_link = self.qr_link
 
         user_id = self.user_id
 
@@ -46,6 +56,8 @@ class QRGeneratedEvent:
         field_dict.update(
             {
                 "type": type_,
+                "qrcode": qrcode,
+                "qrLink": qr_link,
                 "userID": user_id,
                 "instanceID": instance_id,
                 "instanceName": instance_name,
@@ -62,6 +74,10 @@ class QRGeneratedEvent:
         if type_ != "QRGenerated":
             raise ValueError(f"type must match const 'QRGenerated', got '{type_}'")
 
+        qrcode = d.pop("qrcode")
+
+        qr_link = d.pop("qrLink")
+
         user_id = d.pop("userID")
 
         instance_id = d.pop("instanceID")
@@ -72,6 +88,8 @@ class QRGeneratedEvent:
 
         qr_generated_event = cls(
             type_=type_,
+            qrcode=qrcode,
+            qr_link=qr_link,
             user_id=user_id,
             instance_id=instance_id,
             instance_name=instance_name,

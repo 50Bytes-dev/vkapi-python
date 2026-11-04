@@ -18,7 +18,7 @@ class ConnectBody:
     Attributes:
         subscribe (list[EventType] | Unset): The event subscription; overwrites the stored one. Unknown types are
             dropped, duplicates kept once. Example: ['Sync', 'QRAuthorized', 'AuthExpired', 'Disconnected', 'QRGenerated',
-            'QRScanned', 'QRExpired', 'MessageOutcome'].
+            'QRScanned', 'QRCodeRequired', 'QRExpired', 'MessageOutcome'].
         immediate (bool | Unset): Read and ignored (kept from maxapi).
     """
 

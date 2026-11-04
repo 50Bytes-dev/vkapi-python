@@ -71,10 +71,11 @@ def sync_detailed(
 ) -> Response[ErrorResponse | QRResponse]:
     """Get the QR of the running login
 
-     Returns the QR of the running login as a PNG data URI. No VK call. Every
-    call keeps the login alive: a login whose QR and code nobody read for
-    2 minutes ends with `login_expired`. Keep polling it while the QR or the
-    code field is shown.
+     Returns the QR of the running login as a PNG data URI, the same image
+    the latest `QRGenerated` carried. No VK call. Reading is optional and
+    keeps nothing alive (1.4.0): a login can be followed from webhooks alone
+    (`QRGenerated`, `QRScanned`, `QRCodeRequired`, `QRAuthorized`,
+    `QRExpired`).
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -99,10 +100,11 @@ def sync(
 ) -> ErrorResponse | QRResponse | None:
     """Get the QR of the running login
 
-     Returns the QR of the running login as a PNG data URI. No VK call. Every
-    call keeps the login alive: a login whose QR and code nobody read for
-    2 minutes ends with `login_expired`. Keep polling it while the QR or the
-    code field is shown.
+     Returns the QR of the running login as a PNG data URI, the same image
+    the latest `QRGenerated` carried. No VK call. Reading is optional and
+    keeps nothing alive (1.4.0): a login can be followed from webhooks alone
+    (`QRGenerated`, `QRScanned`, `QRCodeRequired`, `QRAuthorized`,
+    `QRExpired`).
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -123,10 +125,11 @@ async def asyncio_detailed(
 ) -> Response[ErrorResponse | QRResponse]:
     """Get the QR of the running login
 
-     Returns the QR of the running login as a PNG data URI. No VK call. Every
-    call keeps the login alive: a login whose QR and code nobody read for
-    2 minutes ends with `login_expired`. Keep polling it while the QR or the
-    code field is shown.
+     Returns the QR of the running login as a PNG data URI, the same image
+    the latest `QRGenerated` carried. No VK call. Reading is optional and
+    keeps nothing alive (1.4.0): a login can be followed from webhooks alone
+    (`QRGenerated`, `QRScanned`, `QRCodeRequired`, `QRAuthorized`,
+    `QRExpired`).
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -149,10 +152,11 @@ async def asyncio(
 ) -> ErrorResponse | QRResponse | None:
     """Get the QR of the running login
 
-     Returns the QR of the running login as a PNG data URI. No VK call. Every
-    call keeps the login alive: a login whose QR and code nobody read for
-    2 minutes ends with `login_expired`. Keep polling it while the QR or the
-    code field is shown.
+     Returns the QR of the running login as a PNG data URI, the same image
+    the latest `QRGenerated` carried. No VK call. Reading is optional and
+    keeps nothing alive (1.4.0): a login can be followed from webhooks alone
+    (`QRGenerated`, `QRScanned`, `QRCodeRequired`, `QRAuthorized`,
+    `QRExpired`).
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

@@ -22,7 +22,7 @@ class AddUserBody:
         events (str | Unset): Comma-separated event subscription of `EventType` names; other names, maxapi's `All`
             included,
             are dropped, so `All` subscribes to nothing. `POST /session/connect` overwrites it with `subscribe`. Example:
-            Sync,QRAuthorized,AuthExpired,Disconnected,QRGenerated,QRScanned,QRExpired,MessageOutcome.
+            Sync,QRAuthorized,AuthExpired,Disconnected,QRGenerated,QRScanned,QRCodeRequired,QRExpired,MessageOutcome.
     """
 
     name: str | Unset = UNSET

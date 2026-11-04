@@ -7,6 +7,7 @@ class EventType(str, Enum):
     LOGGEDOUT = "LoggedOut"
     MESSAGEOUTCOME = "MessageOutcome"
     QRAUTHORIZED = "QRAuthorized"
+    QRCODEREQUIRED = "QRCodeRequired"
     QREXPIRED = "QRExpired"
     QRGENERATED = "QRGenerated"
     QRSCANNED = "QRScanned"

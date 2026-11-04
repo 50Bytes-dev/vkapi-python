@@ -16,6 +16,9 @@ class QRAuthorizedEvent:
     Attributes:
         type_ (Literal['QRAuthorized']):
         max_user_id (int): The VK id of the owner's page (the name is kept from maxapi) Example: 123456789.
+        auth_token (str): The VK access token of the login, as stored (1.4.0; maxapi's name). It is
+            full access to the owner's VK page: keep it as a secret. A later token
+            refresh in the gateway replaces it without an event. Example: vk1.a.XXXXXXXX.
         user_id (str): The account id (`userID` and `instanceID` are the same) Example:
             6f1c2d4e-8b3e-4035-ba87-3f96a0e3f5c0.
         instance_id (str): The account id (`userID` and `instanceID` are the same) Example:
@@ -26,6 +29,7 @@ class QRAuthorizedEvent:
 
     type_: Literal["QRAuthorized"]
     max_user_id: int
+    auth_token: str = _attrs_field(repr=False)
     user_id: str
     instance_id: str
     instance_name: str
@@ -36,6 +40,8 @@ class QRAuthorizedEvent:
         type_ = self.type_
 
         max_user_id = self.max_user_id
+
+        auth_token = self.auth_token
 
         user_id = self.user_id
 
@@ -51,6 +57,7 @@ class QRAuthorizedEvent:
             {
                 "type": type_,
                 "maxUserID": max_user_id,
+                "authToken": auth_token,
                 "userID": user_id,
                 "instanceID": instance_id,
                 "instanceName": instance_name,
@@ -69,6 +76,8 @@ class QRAuthorizedEvent:
 
         max_user_id = d.pop("maxUserID")
 
+        auth_token = d.pop("authToken")
+
         user_id = d.pop("userID")
 
         instance_id = d.pop("instanceID")
@@ -80,6 +89,7 @@ class QRAuthorizedEvent:
         qr_authorized_event = cls(
             type_=type_,
             max_user_id=max_user_id,
+            auth_token=auth_token,
             user_id=user_id,
             instance_id=instance_id,
             instance_name=instance_name,

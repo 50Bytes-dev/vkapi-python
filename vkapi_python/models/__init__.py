@@ -17,6 +17,7 @@ from .logged_out_event import LoggedOutEvent
 from .message_outcome_event import MessageOutcomeEvent
 from .message_response import MessageResponse
 from .qr_authorized_event import QRAuthorizedEvent
+from .qr_code_required_event import QRCodeRequiredEvent
 from .qr_expired_event import QRExpiredEvent
 from .qr_generated_event import QRGeneratedEvent
 from .qr_response import QRResponse
@@ -47,6 +48,7 @@ __all__ = (
     "MessageOutcomeEvent",
     "MessageResponse",
     "QRAuthorizedEvent",
+    "QRCodeRequiredEvent",
     "QRExpiredEvent",
     "QRGeneratedEvent",
     "QRResponse",

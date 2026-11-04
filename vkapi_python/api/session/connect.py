@@ -96,8 +96,9 @@ def sync_detailed(
     login is checked with VK and reused (`alreadyConnected` true, `maxUserID`,
     webhook `Sync`); while the page is paused it is reused without a VK call
     (`paused` true, `pauseReason`). Without a usable stored login a QR login
-    starts (`alreadyConnected` false, webhook `QRGenerated`): read the QR
-    from `GET /session/qr`.
+    starts (`alreadyConnected` false, webhook `QRGenerated` with the QR image
+    and link; `GET /session/qr` serves the same image). The login lives until
+    VK, the owner or the account ends it; reads do not keep it alive.
 
     Args:
         body (ConnectBody):
@@ -132,8 +133,9 @@ def sync(
     login is checked with VK and reused (`alreadyConnected` true, `maxUserID`,
     webhook `Sync`); while the page is paused it is reused without a VK call
     (`paused` true, `pauseReason`). Without a usable stored login a QR login
-    starts (`alreadyConnected` false, webhook `QRGenerated`): read the QR
-    from `GET /session/qr`.
+    starts (`alreadyConnected` false, webhook `QRGenerated` with the QR image
+    and link; `GET /session/qr` serves the same image). The login lives until
+    VK, the owner or the account ends it; reads do not keep it alive.
 
     Args:
         body (ConnectBody):
@@ -163,8 +165,9 @@ async def asyncio_detailed(
     login is checked with VK and reused (`alreadyConnected` true, `maxUserID`,
     webhook `Sync`); while the page is paused it is reused without a VK call
     (`paused` true, `pauseReason`). Without a usable stored login a QR login
-    starts (`alreadyConnected` false, webhook `QRGenerated`): read the QR
-    from `GET /session/qr`.
+    starts (`alreadyConnected` false, webhook `QRGenerated` with the QR image
+    and link; `GET /session/qr` serves the same image). The login lives until
+    VK, the owner or the account ends it; reads do not keep it alive.
 
     Args:
         body (ConnectBody):
@@ -197,8 +200,9 @@ async def asyncio(
     login is checked with VK and reused (`alreadyConnected` true, `maxUserID`,
     webhook `Sync`); while the page is paused it is reused without a VK call
     (`paused` true, `pauseReason`). Without a usable stored login a QR login
-    starts (`alreadyConnected` false, webhook `QRGenerated`): read the QR
-    from `GET /session/qr`.
+    starts (`alreadyConnected` false, webhook `QRGenerated` with the QR image
+    and link; `GET /session/qr` serves the same image). The login lives until
+    VK, the owner or the account ends it; reads do not keep it alive.
 
     Args:
         body (ConnectBody):

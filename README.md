@@ -66,7 +66,7 @@ created = add_user.sync(
     body=AddUserBody(
         name="shop-12-vk",
         webhook="https://shop.example/webhook/vk?secret=s3cr3t",
-        events="Sync,QRAuthorized,AuthExpired,Disconnected,QRGenerated,QRScanned,QRExpired,MessageOutcome",
+        events="Sync,QRAuthorized,AuthExpired,Disconnected,QRGenerated,QRScanned,QRCodeRequired,QRExpired,MessageOutcome",
     ),
 )
 print(created.id, created.token)  # the token goes into the account client
@@ -83,15 +83,16 @@ from vkapi_python.models import CodeBody, ConnectBody, ErrorResponse, EventType
 res = connect.sync(
     client=account,
     body=ConnectBody(
-        subscribe=[EventType.SYNC, EventType.QRAUTHORIZED, EventType.AUTHEXPIRED, EventType.QREXPIRED,
-                   EventType.MESSAGEOUTCOME],
+        subscribe=[EventType.SYNC, EventType.QRGENERATED, EventType.QRSCANNED, EventType.QRCODEREQUIRED,
+                   EventType.QRAUTHORIZED, EventType.QREXPIRED, EventType.AUTHEXPIRED, EventType.MESSAGEOUTCOME],
     ),
 )
 if isinstance(res, ErrorResponse):
     raise RuntimeError(f"{res.code}: {res.error}")  # login_unavailable, not_connected, login_rate_limited, ...
 
 if not res.already_connected:
-    # Poll the QR every few seconds while it is shown: the reads keep the login alive.
+    # The QR comes in the QRGenerated webhook (see "Parse a webhook"); reading it here is optional and keeps
+    # nothing alive: the login runs until VK, the owner or the account ends it.
     qr = get_qr.sync(client=account)
     if isinstance(qr, ErrorResponse):
         if qr.code == "code_required":  # VK asks for a confirmation code after the scan
@@ -166,19 +167,33 @@ An error (`page_paused`, `vk_error`, `not_connected`, `INVALID_INPUT`) comes bac
 
 ### Parse a webhook
 
-Each event has its model; pick it by `type`. A model refuses a body of another type with `ValueError`.
+Each event has its model; pick it by `type`. A model refuses a body of another type with `ValueError`. There are
+eleven events; since 1.4.0 the login can be followed from them alone:
+
+| Event | Fields besides `type`, `user_id`, `instance_id`, `instance_name`, `event_timestamp` |
+|---|---|
+| `QRGeneratedEvent` | `qrcode`: the QR as a PNG data URI (the same as `get_qr`); `qr_link`: VK's login link it encodes, to draw your own QR. Sent on the login's start and on every new QR |
+| `QRScannedEvent` | none: the owner scanned the QR |
+| `QRCodeRequiredEvent` | none: VK asks for the confirmation code (once per login); send it with `submit_code` |
+| `QRAuthorizedEvent` | `max_user_id`; `auth_token`: **the VK access token of the login, full access to the owner's VK page** |
+| `QRExpiredEvent` | `reason`: `login_expired`, `login_rejected` or `login_failed` |
+
+`auth_token` is a live token of the owner's personal VK page, with access to its messages: whoever has it can act as
+the owner. Store it like a password, never log it, and keep the webhook endpoint that receives it private. The model
+leaves it out of `repr`. It is the token at login time: the gateway refreshes it later without an event. No other
+event carries a secret.
 
 ```python
 from vkapi_python.models import (
     AuthExpiredEvent, DisconnectedEvent, LoggedOutEvent, MessageOutcomeEvent, QRAuthorizedEvent,
-    QRExpiredEvent, QRGeneratedEvent, QRScannedEvent, ReconnectingEvent, SyncEvent,
+    QRCodeRequiredEvent, QRExpiredEvent, QRGeneratedEvent, QRScannedEvent, ReconnectingEvent, SyncEvent,
 )
 
 EVENTS = {
-    "QRGenerated": QRGeneratedEvent, "QRScanned": QRScannedEvent, "QRAuthorized": QRAuthorizedEvent,
-    "QRExpired": QRExpiredEvent, "Sync": SyncEvent, "AuthExpired": AuthExpiredEvent,
-    "Disconnected": DisconnectedEvent, "Reconnecting": ReconnectingEvent, "LoggedOut": LoggedOutEvent,
-    "MessageOutcome": MessageOutcomeEvent,
+    "QRGenerated": QRGeneratedEvent, "QRScanned": QRScannedEvent, "QRCodeRequired": QRCodeRequiredEvent,
+    "QRAuthorized": QRAuthorizedEvent, "QRExpired": QRExpiredEvent, "Sync": SyncEvent,
+    "AuthExpired": AuthExpiredEvent, "Disconnected": DisconnectedEvent, "Reconnecting": ReconnectingEvent,
+    "LoggedOut": LoggedOutEvent, "MessageOutcome": MessageOutcomeEvent,
 }
 
 
@@ -187,7 +202,15 @@ def parse_event(body: dict):
 
 
 event = parse_event(request_json)  # the webhook's JSON body
-if isinstance(event, MessageOutcomeEvent):
+if isinstance(event, QRGeneratedEvent):
+    show_qr(event.qrcode)  # your code; or draw a QR of event.qr_link
+elif isinstance(event, QRCodeRequiredEvent):
+    ask_for_code()  # your code: then submit_code.sync(client=account, body=CodeBody(code=...))
+elif isinstance(event, QRAuthorizedEvent):
+    store_secret(event.max_user_id, event.auth_token)  # your code: full access to the owner's VK page
+elif isinstance(event, QRExpiredEvent):
+    print("login ended:", event.reason)  # login_expired, login_rejected, login_failed
+elif isinstance(event, MessageOutcomeEvent):
     print(event.ref, "delivered" if event.delivered else "not delivered", event.message_id)
 elif isinstance(event, AuthExpiredEvent):
     print("login lost:", event.reason)  # token_revoked, page_blocked, refresh_failed
@@ -238,4 +261,4 @@ uv sync
 `vkapi_python`. The generator is pinned below 0.29: 0.29 writes code that needs Python 3.11 (`typing.Self`), and the
 package supports 3.10.
 
-`templates/client.py.jinja` overrides the generator's client template in one respect: `token` and the headers (which carry the token once a request is made) are left out of the clients' `repr`, so a client in a log or a traceback does not show the token. When the generator is upgraded, copy its new `client.py.jinja` and redo that change.
+`templates/client.py.jinja` overrides the generator's client template in one respect: `token` and the headers (which carry the token once a request is made) are left out of the clients' `repr`, so a client in a log or a traceback does not show the token. `templates/model.py.jinja` overrides the generator's model template the same way for the fields that carry a VK token (`auth_token` of `QRAuthorizedEvent`): they are left out of the model's `repr`. When the generator is upgraded, copy its new `client.py.jinja` and `model.py.jinja` and redo these changes.
