@@ -237,3 +237,5 @@ uv sync
 `generate.sh` runs `openapi-python-client` from the dev group and moves the generated `vkapi_client` package to
 `vkapi_python`. The generator is pinned below 0.29: 0.29 writes code that needs Python 3.11 (`typing.Self`), and the
 package supports 3.10.
+
+`templates/client.py.jinja` overrides the generator's client template in one respect: `token` and the headers (which carry the token once a request is made) are left out of the clients' `repr`, so a client in a log or a traceback does not show the token. When the generator is upgraded, copy its new `client.py.jinja` and redo that change.
