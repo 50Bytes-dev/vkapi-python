@@ -15,8 +15,8 @@ class QRExpiredEvent:
 
     Attributes:
         type_ (Literal['QRExpired']):
-        reason (str): `login_expired`, `login_rejected` (declined on the phone) or `login_failed` Example:
-            login_expired.
+        reason (str): `login_expired`, `login_rejected` (declined on the phone) or `login_failed` (also when VK has not
+            answered the login's poll for 5 minutes) Example: login_expired.
         user_id (str): The account id (`userID` and `instanceID` are the same) Example:
             6f1c2d4e-8b3e-4035-ba87-3f96a0e3f5c0.
         instance_id (str): The account id (`userID` and `instanceID` are the same) Example:
