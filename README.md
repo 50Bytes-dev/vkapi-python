@@ -3,7 +3,7 @@ A client library for accessing VKAPI (https://github.com/50Bytes-dev/vkapi), the
 personal VK page and works from it: it sends messages with a text and up to 10 photos to people and to group chats,
 lists the page's conversations and the members of its chats, uploads a photo once for every chat, takes the photos
 of wall posts by id and deletes the page's messages for everyone. vkapi and maxapi share one contract; this package
-follows vkapi's version (2.0.0).
+follows vkapi's version (2.0.1).
 
 The package is generated from the gateway's OpenAPI schema (`static/api/spec.yml` in vkapi; the gateway serves it at
 `/api/spec.yml`, with the Swagger UI at `/api/`). The full contract, with every code and when it comes, is
@@ -190,7 +190,7 @@ from vkapi_python.models import DeleteBody
 
 res = delete_messages.sync(client=account, body=DeleteBody(chat_id=2000000001, message_ids=["12031"]))
 for r in res.results:
-    print(r.message_id, r.status)  # deleted, too_old (past 24 hours), forbidden, not_found
+    print(r.message_id, r.status)  # deleted, too_old (VK refused: error 924), forbidden, not_found
 ```
 
 ### List and search the page's chats

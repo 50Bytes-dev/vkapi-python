@@ -16,8 +16,8 @@ class DeleteResult:
     """
     Attributes:
         message_id (str):  Example: 12031.
-        status (str): `deleted`, `too_old` (past 24 hours by its date, or VK 924), `forbidden` (917, 925, 15 for the
-            message), `not_found` (not there, deleted, or of another dialog) Example: deleted.
+        status (str): `deleted`, `too_old` (VK 924), `forbidden` (917, 925, 15 for the message), `not_found` (not there,
+            deleted, or of another dialog) Example: deleted.
         upstream_code (str | Unset): VK's error for this message, when it gave one Example: 924.
     """
 

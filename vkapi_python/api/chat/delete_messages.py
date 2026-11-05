@@ -90,9 +90,10 @@ def sync_detailed(
      Deletes up to 100 of the page's messages in one dialog for everyone,
     with a status per message. The gateway reads them first
     (`messages.getById`): one not there or of another dialog is
-    `not_found`, one past 24 hours `too_old`, and neither goes to
-    `messages.delete` with `delete_for_all` (VK ignores `peer_id` and the
-    24 hours with message ids). A paused page
+    `not_found` and does not go to `messages.delete` with
+    `delete_for_all` (VK ignores `peer_id` with message ids). How old a
+    message may be, VK decides (2.0.1): it deleted for everyone messages
+    26 hours old. A paused page
     answers `send_rejected` with the pause, as a send does. Within 8 s.
 
     Args:
@@ -127,9 +128,10 @@ def sync(
      Deletes up to 100 of the page's messages in one dialog for everyone,
     with a status per message. The gateway reads them first
     (`messages.getById`): one not there or of another dialog is
-    `not_found`, one past 24 hours `too_old`, and neither goes to
-    `messages.delete` with `delete_for_all` (VK ignores `peer_id` and the
-    24 hours with message ids). A paused page
+    `not_found` and does not go to `messages.delete` with
+    `delete_for_all` (VK ignores `peer_id` with message ids). How old a
+    message may be, VK decides (2.0.1): it deleted for everyone messages
+    26 hours old. A paused page
     answers `send_rejected` with the pause, as a send does. Within 8 s.
 
     Args:
@@ -159,9 +161,10 @@ async def asyncio_detailed(
      Deletes up to 100 of the page's messages in one dialog for everyone,
     with a status per message. The gateway reads them first
     (`messages.getById`): one not there or of another dialog is
-    `not_found`, one past 24 hours `too_old`, and neither goes to
-    `messages.delete` with `delete_for_all` (VK ignores `peer_id` and the
-    24 hours with message ids). A paused page
+    `not_found` and does not go to `messages.delete` with
+    `delete_for_all` (VK ignores `peer_id` with message ids). How old a
+    message may be, VK decides (2.0.1): it deleted for everyone messages
+    26 hours old. A paused page
     answers `send_rejected` with the pause, as a send does. Within 8 s.
 
     Args:
@@ -194,9 +197,10 @@ async def asyncio(
      Deletes up to 100 of the page's messages in one dialog for everyone,
     with a status per message. The gateway reads them first
     (`messages.getById`): one not there or of another dialog is
-    `not_found`, one past 24 hours `too_old`, and neither goes to
-    `messages.delete` with `delete_for_all` (VK ignores `peer_id` and the
-    24 hours with message ids). A paused page
+    `not_found` and does not go to `messages.delete` with
+    `delete_for_all` (VK ignores `peer_id` with message ids). How old a
+    message may be, VK decides (2.0.1): it deleted for everyone messages
+    26 hours old. A paused page
     answers `send_rejected` with the pause, as a send does. Within 8 s.
 
     Args:
