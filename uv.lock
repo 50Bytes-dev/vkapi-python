@@ -615,7 +615,7 @@ wheels = [
 
 [[package]]
 name = "vkapi-python"
-version = "1.4.1"
+version = "2.0.2"
 source = { editable = "." }
 dependencies = [
     { name = "attrs" },

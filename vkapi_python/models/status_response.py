@@ -33,8 +33,10 @@ class StatusResponse:
         captcha_solve_error (str | Unset): Why the gateway did not solve the captcha that paused the page on a send
             (solving on): `timeout`, `bot`, `page_changed`, `failed`, `rejected` (VK
             asked again after the answer) or `not_tried` (no `captcha_sid`, or the
-            captcha page was not on a VK host). `bot` and `page_changed` mean the
-            solver needs a new browser recording. Example: timeout.
+            captcha page was not on a VK host). `bot` (VK's antibot answered BOT and
+            offered nothing else) and `page_changed` mean the solver may need a new
+            browser recording; a slider VK offered with no time left to drag it is
+            `timeout`, and a slider answer VK did not take is `failed`. Example: timeout.
         captcha_image (str | Unset): Only while paused for a captcha, for the account VK gave it to, once
             downloaded and for 5 minutes: a `data:image/(png|jpeg|gif);base64,...`
             URI. Answer it with `POST /session/resume` `captchaKey`. Example: data:image/png;base64,iVBORw0KGgo....
