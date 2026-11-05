@@ -3,7 +3,7 @@ A client library for accessing VKAPI (https://github.com/50Bytes-dev/vkapi), the
 personal VK page and works from it: it sends messages with a text and up to 10 photos to people and to group chats,
 lists the page's conversations and the members of its chats, uploads a photo once for every chat, takes the photos
 of wall posts by id and deletes the page's messages for everyone. vkapi and maxapi share one contract; this package
-follows vkapi's version (2.0.2).
+follows vkapi's version (2.0.3).
 
 The package is generated from the gateway's OpenAPI schema (`static/api/spec.yml` in vkapi; the gateway serves it at
 `/api/spec.yml`, with the Swagger UI at `/api/`). The full contract, with every code and when it comes, is

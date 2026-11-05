@@ -30,10 +30,13 @@ class StatusResponse:
         pause_reason (str | Unset): Why sending from the page is paused: `captcha` (VK error 14 the gateway
             did not solve), `spam` (7, 9, 17, 29, 983, 984) or `access_denied` (15). Example: spam.
         upstream_code (str | Unset): Only while paused; the VK error that paused the page, as a string Example: 14.
-        captcha_solve_error (str | Unset): Why the gateway did not solve the captcha that paused the page on a send
-            (solving on): `timeout`, `bot`, `page_changed`, `failed`, `rejected` (VK
-            asked again after the answer) or `not_tried` (no `captcha_sid`, or the
-            captcha page was not on a VK host). `bot` (VK's antibot answered BOT and
+        captcha_solve_error (str | Unset): Why the gateway did not solve VK's captcha (solving on): on a pause it
+            set for the captcha, on any call (since 2.0.3; before, on a send), or
+            on a refusal with `upstreamCode` "14" and no pause. `timeout`, `bot`,
+            `page_changed`, `failed`, `rejected` (VK asked again after the answer,
+            or a second captcha came in the same operation) or `not_tried` (no
+            `redirect_uri` or `captcha_sid`, the captcha page not on a VK host, or
+            the OAuth call of the token refresh, whose captcha is not solved). `bot` (VK's antibot answered BOT and
             offered nothing else) and `page_changed` mean the solver may need a new
             browser recording; a slider VK offered with no time left to drag it is
             `timeout`, and a slider answer VK did not take is `failed`. Example: timeout.

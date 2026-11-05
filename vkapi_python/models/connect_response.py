@@ -24,6 +24,16 @@ class ConnectResponse:
         paused (bool | Unset): Whether sending from the page is paused; only with `alreadyConnected` true.
         pause_reason (str | Unset): Why sending from the page is paused: `captcha` (VK error 14 the gateway
             did not solve), `spam` (7, 9, 17, 29, 983, 984) or `access_denied` (15). Example: spam.
+        captcha_solve_error (str | Unset): Why the gateway did not solve VK's captcha (solving on): on a pause it
+            set for the captcha, on any call (since 2.0.3; before, on a send), or
+            on a refusal with `upstreamCode` "14" and no pause. `timeout`, `bot`,
+            `page_changed`, `failed`, `rejected` (VK asked again after the answer,
+            or a second captcha came in the same operation) or `not_tried` (no
+            `redirect_uri` or `captcha_sid`, the captcha page not on a VK host, or
+            the OAuth call of the token refresh, whose captcha is not solved). `bot` (VK's antibot answered BOT and
+            offered nothing else) and `page_changed` mean the solver may need a new
+            browser recording; a slider VK offered with no time left to drag it is
+            `timeout`, and a slider answer VK did not take is `failed`. Example: timeout.
     """
 
     success: bool
@@ -33,6 +43,7 @@ class ConnectResponse:
     max_user_id: int | Unset = UNSET
     paused: bool | Unset = UNSET
     pause_reason: str | Unset = UNSET
+    captcha_solve_error: str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -50,6 +61,8 @@ class ConnectResponse:
 
         pause_reason = self.pause_reason
 
+        captcha_solve_error = self.captcha_solve_error
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -66,6 +79,8 @@ class ConnectResponse:
             field_dict["paused"] = paused
         if pause_reason is not UNSET:
             field_dict["pauseReason"] = pause_reason
+        if captcha_solve_error is not UNSET:
+            field_dict["captchaSolveError"] = captcha_solve_error
 
         return field_dict
 
@@ -86,6 +101,8 @@ class ConnectResponse:
 
         pause_reason = d.pop("pauseReason", UNSET)
 
+        captcha_solve_error = d.pop("captchaSolveError", UNSET)
+
         connect_response = cls(
             success=success,
             details=details,
@@ -94,6 +111,7 @@ class ConnectResponse:
             max_user_id=max_user_id,
             paused=paused,
             pause_reason=pause_reason,
+            captcha_solve_error=captcha_solve_error,
         )
 
         connect_response.additional_properties = d
