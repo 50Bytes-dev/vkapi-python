@@ -83,7 +83,7 @@ def sync_detailed(
     """Create an account
 
      Creates a gateway account and returns its id and account token. Accounts
-    cannot be listed, read or edited.
+    cannot be listed or read; `PUT /admin/users/{userid}` edits one.
 
     Args:
         body (AddUserBody):
@@ -115,7 +115,7 @@ def sync(
     """Create an account
 
      Creates a gateway account and returns its id and account token. Accounts
-    cannot be listed, read or edited.
+    cannot be listed or read; `PUT /admin/users/{userid}` edits one.
 
     Args:
         body (AddUserBody):
@@ -142,7 +142,7 @@ async def asyncio_detailed(
     """Create an account
 
      Creates a gateway account and returns its id and account token. Accounts
-    cannot be listed, read or edited.
+    cannot be listed or read; `PUT /admin/users/{userid}` edits one.
 
     Args:
         body (AddUserBody):
@@ -172,7 +172,7 @@ async def asyncio(
     """Create an account
 
      Creates a gateway account and returns its id and account token. Accounts
-    cannot be listed, read or edited.
+    cannot be listed or read; `PUT /admin/users/{userid}` edits one.
 
     Args:
         body (AddUserBody):

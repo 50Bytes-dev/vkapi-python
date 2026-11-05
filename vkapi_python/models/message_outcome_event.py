@@ -28,7 +28,7 @@ class MessageOutcomeEvent:
                 6f1c2d4e-8b3e-4035-ba87-3f96a0e3f5c0.
             instance_name (str): The account name Example: retail-12-vk-34.
             event_timestamp (int): Unix time in seconds, set when the event happened; a retry keeps it Example: 1793001234.
-            message_id (int | Unset): VK's message id; only when delivered Example: 12030.
+            message_id (str | Unset): VK's message id, as a string (2.0.0); only when delivered Example: 12030.
     """
 
     type_: Literal["MessageOutcome"]
@@ -40,7 +40,7 @@ class MessageOutcomeEvent:
     instance_id: str
     instance_name: str
     event_timestamp: int
-    message_id: int | Unset = UNSET
+    message_id: str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:

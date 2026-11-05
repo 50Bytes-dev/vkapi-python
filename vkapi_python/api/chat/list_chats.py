@@ -14,6 +14,8 @@ def _get_kwargs(
     *,
     offset: int | Unset = 0,
     count: int | Unset = 20,
+    type_: list[str] | Unset = UNSET,
+    include: list[str] | Unset = UNSET,
     filter_: str | Unset = UNSET,
     start_message_id: int | Unset = UNSET,
     q: str | Unset = UNSET,
@@ -24,6 +26,18 @@ def _get_kwargs(
     params["offset"] = offset
 
     params["count"] = count
+
+    json_type_: list[str] | Unset = UNSET
+    if not isinstance(type_, Unset):
+        json_type_ = type_
+
+    params["type"] = json_type_
+
+    json_include: list[str] | Unset = UNSET
+    if not isinstance(include, Unset):
+        json_include = include
+
+    params["include"] = json_include
 
     params["filter"] = filter_
 
@@ -65,6 +79,11 @@ def _parse_response(
 
         return response_409
 
+    if response.status_code == 429:
+        response_429 = ErrorResponse.from_dict(response.json())
+
+        return response_429
+
     if response.status_code == 502:
         response_502 = ErrorResponse.from_dict(response.json())
 
@@ -97,6 +116,8 @@ def sync_detailed(
     client: AuthenticatedClient,
     offset: int | Unset = 0,
     count: int | Unset = 20,
+    type_: list[str] | Unset = UNSET,
+    include: list[str] | Unset = UNSET,
     filter_: str | Unset = UNSET,
     start_message_id: int | Unset = UNSET,
     q: str | Unset = UNSET,
@@ -104,15 +125,19 @@ def sync_detailed(
     """List or search the page's conversations
 
      The page's conversations as VK gives them, newest first: people,
-    communities and group chats, each with the `chatId` a send takes. Without
-    `q` it is a page of `messages.getConversations`; with `q`, VK's search by
-    title or name (at most 255 found). One VK call, within 8 s. No message
-    text is returned.
+    communities, group chats and channels, each with the `chatId` a send
+    takes. Without `q` it is a page of `messages.getConversations`; with `q`,
+    VK's search by title or name (at most 255 found). `type` keeps some
+    types, with `q` or without. Within 8 s, and 0.5 s more for each
+    conversation with `include=participants`. No message text and no member
+    leaves the gateway unless `include` asks.
 
     Args:
         offset (int | Unset):  Default: 0.
         count (int | Unset):  Default: 20.
-        filter_ (str | Unset):  Example: chats.
+        type_ (list[str] | Unset):  Example: ['chat', 'channel'].
+        include (list[str] | Unset):  Example: ['lastMessage'].
+        filter_ (str | Unset):  Example: unread.
         start_message_id (int | Unset):
         q (str | Unset):
 
@@ -127,6 +152,8 @@ def sync_detailed(
     kwargs = _get_kwargs(
         offset=offset,
         count=count,
+        type_=type_,
+        include=include,
         filter_=filter_,
         start_message_id=start_message_id,
         q=q,
@@ -144,6 +171,8 @@ def sync(
     client: AuthenticatedClient,
     offset: int | Unset = 0,
     count: int | Unset = 20,
+    type_: list[str] | Unset = UNSET,
+    include: list[str] | Unset = UNSET,
     filter_: str | Unset = UNSET,
     start_message_id: int | Unset = UNSET,
     q: str | Unset = UNSET,
@@ -151,15 +180,19 @@ def sync(
     """List or search the page's conversations
 
      The page's conversations as VK gives them, newest first: people,
-    communities and group chats, each with the `chatId` a send takes. Without
-    `q` it is a page of `messages.getConversations`; with `q`, VK's search by
-    title or name (at most 255 found). One VK call, within 8 s. No message
-    text is returned.
+    communities, group chats and channels, each with the `chatId` a send
+    takes. Without `q` it is a page of `messages.getConversations`; with `q`,
+    VK's search by title or name (at most 255 found). `type` keeps some
+    types, with `q` or without. Within 8 s, and 0.5 s more for each
+    conversation with `include=participants`. No message text and no member
+    leaves the gateway unless `include` asks.
 
     Args:
         offset (int | Unset):  Default: 0.
         count (int | Unset):  Default: 20.
-        filter_ (str | Unset):  Example: chats.
+        type_ (list[str] | Unset):  Example: ['chat', 'channel'].
+        include (list[str] | Unset):  Example: ['lastMessage'].
+        filter_ (str | Unset):  Example: unread.
         start_message_id (int | Unset):
         q (str | Unset):
 
@@ -175,6 +208,8 @@ def sync(
         client=client,
         offset=offset,
         count=count,
+        type_=type_,
+        include=include,
         filter_=filter_,
         start_message_id=start_message_id,
         q=q,
@@ -186,6 +221,8 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     offset: int | Unset = 0,
     count: int | Unset = 20,
+    type_: list[str] | Unset = UNSET,
+    include: list[str] | Unset = UNSET,
     filter_: str | Unset = UNSET,
     start_message_id: int | Unset = UNSET,
     q: str | Unset = UNSET,
@@ -193,15 +230,19 @@ async def asyncio_detailed(
     """List or search the page's conversations
 
      The page's conversations as VK gives them, newest first: people,
-    communities and group chats, each with the `chatId` a send takes. Without
-    `q` it is a page of `messages.getConversations`; with `q`, VK's search by
-    title or name (at most 255 found). One VK call, within 8 s. No message
-    text is returned.
+    communities, group chats and channels, each with the `chatId` a send
+    takes. Without `q` it is a page of `messages.getConversations`; with `q`,
+    VK's search by title or name (at most 255 found). `type` keeps some
+    types, with `q` or without. Within 8 s, and 0.5 s more for each
+    conversation with `include=participants`. No message text and no member
+    leaves the gateway unless `include` asks.
 
     Args:
         offset (int | Unset):  Default: 0.
         count (int | Unset):  Default: 20.
-        filter_ (str | Unset):  Example: chats.
+        type_ (list[str] | Unset):  Example: ['chat', 'channel'].
+        include (list[str] | Unset):  Example: ['lastMessage'].
+        filter_ (str | Unset):  Example: unread.
         start_message_id (int | Unset):
         q (str | Unset):
 
@@ -216,6 +257,8 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         offset=offset,
         count=count,
+        type_=type_,
+        include=include,
         filter_=filter_,
         start_message_id=start_message_id,
         q=q,
@@ -231,6 +274,8 @@ async def asyncio(
     client: AuthenticatedClient,
     offset: int | Unset = 0,
     count: int | Unset = 20,
+    type_: list[str] | Unset = UNSET,
+    include: list[str] | Unset = UNSET,
     filter_: str | Unset = UNSET,
     start_message_id: int | Unset = UNSET,
     q: str | Unset = UNSET,
@@ -238,15 +283,19 @@ async def asyncio(
     """List or search the page's conversations
 
      The page's conversations as VK gives them, newest first: people,
-    communities and group chats, each with the `chatId` a send takes. Without
-    `q` it is a page of `messages.getConversations`; with `q`, VK's search by
-    title or name (at most 255 found). One VK call, within 8 s. No message
-    text is returned.
+    communities, group chats and channels, each with the `chatId` a send
+    takes. Without `q` it is a page of `messages.getConversations`; with `q`,
+    VK's search by title or name (at most 255 found). `type` keeps some
+    types, with `q` or without. Within 8 s, and 0.5 s more for each
+    conversation with `include=participants`. No message text and no member
+    leaves the gateway unless `include` asks.
 
     Args:
         offset (int | Unset):  Default: 0.
         count (int | Unset):  Default: 20.
-        filter_ (str | Unset):  Example: chats.
+        type_ (list[str] | Unset):  Example: ['chat', 'channel'].
+        include (list[str] | Unset):  Example: ['lastMessage'].
+        filter_ (str | Unset):  Example: unread.
         start_message_id (int | Unset):
         q (str | Unset):
 
@@ -263,6 +312,8 @@ async def asyncio(
             client=client,
             offset=offset,
             count=count,
+            type_=type_,
+            include=include,
             filter_=filter_,
             start_message_id=start_message_id,
             q=q,

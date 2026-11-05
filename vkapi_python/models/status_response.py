@@ -22,6 +22,10 @@ class StatusResponse:
         authenticated (bool): A VK token is stored, even when disconnected
         logged_in (bool): The same as `connected` (kept from maxapi)
         max_user_id (int): The VK id of the stored login's page; 0 when no token is stored Example: 123456789.
+        name (str | Unset): The page's name, as VK last gave it (after the login, then on each check); only with a
+            stored token Example: Иван Петров.
+        photo (str | Unset): The page's 100 px photo, as VK last gave it; only with a stored token Example:
+            https://sun9-1.userapi.com/photo.jpg.
         paused (bool | Unset): Only for a stored, connected login. Read it before `connected`.
         pause_reason (str | Unset): Why sending from the page is paused: `captcha` (VK error 14 the gateway
             did not solve), `spam` (7, 9, 17, 29, 983, 984) or `access_denied` (15). Example: spam.
@@ -41,6 +45,8 @@ class StatusResponse:
     authenticated: bool
     logged_in: bool
     max_user_id: int
+    name: str | Unset = UNSET
+    photo: str | Unset = UNSET
     paused: bool | Unset = UNSET
     pause_reason: str | Unset = UNSET
     upstream_code: str | Unset = UNSET
@@ -58,6 +64,10 @@ class StatusResponse:
         logged_in = self.logged_in
 
         max_user_id = self.max_user_id
+
+        name = self.name
+
+        photo = self.photo
 
         paused = self.paused
 
@@ -80,6 +90,10 @@ class StatusResponse:
                 "maxUserID": max_user_id,
             }
         )
+        if name is not UNSET:
+            field_dict["name"] = name
+        if photo is not UNSET:
+            field_dict["photo"] = photo
         if paused is not UNSET:
             field_dict["paused"] = paused
         if pause_reason is not UNSET:
@@ -106,6 +120,10 @@ class StatusResponse:
 
         max_user_id = d.pop("maxUserID")
 
+        name = d.pop("name", UNSET)
+
+        photo = d.pop("photo", UNSET)
+
         paused = d.pop("paused", UNSET)
 
         pause_reason = d.pop("pauseReason", UNSET)
@@ -122,6 +140,8 @@ class StatusResponse:
             authenticated=authenticated,
             logged_in=logged_in,
             max_user_id=max_user_id,
+            name=name,
+            photo=photo,
             paused=paused,
             pause_reason=pause_reason,
             upstream_code=upstream_code,

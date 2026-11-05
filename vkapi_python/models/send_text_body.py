@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -19,7 +19,11 @@ class SendTextBody:
             `200000000000 <= chatId < 1000000000000`; or a group chat's peer id,
             `2000000001 <= chatId <= 2100000000` (2e9 + the chat's number as this
             page sees it). Anything else answers `invalid_target`. Example: 987654321.
-        text (str): The message. VK refuses an empty text (`send_rejected`). Example: Заказ 123 готов к выдаче.
+        text (str | Unset): The message; may be empty when there are attachments. Example: Заказ 123 готов к выдаче.
+        attachments (list[str] | Unset): Up to 10 VK attachments, as `POST /media/photo` and `POST
+            /wall/photos` give them (`photo<owner_id>_<id>[_<access_key>]`). They
+            go with any dialog of the page.
+        dont_parse_links (bool | Unset): No link preview (VK's `dont_parse_links`)
         ref (str | Unset): Optional caller's id of the message, at most 128 bytes. A send answered
             `send_failed` with a `ref` is confirmed later by a `MessageOutcome`
             event carrying it, when the account is subscribed to it. Example: order-123-ready.
@@ -30,7 +34,9 @@ class SendTextBody:
     """
 
     chat_id: int
-    text: str
+    text: str | Unset = UNSET
+    attachments: list[str] | Unset = UNSET
+    dont_parse_links: bool | Unset = UNSET
     ref: str | Unset = UNSET
     notify: bool | Unset = UNSET
     reply_to: int | Unset = UNSET
@@ -41,6 +47,12 @@ class SendTextBody:
         chat_id = self.chat_id
 
         text = self.text
+
+        attachments: list[str] | Unset = UNSET
+        if not isinstance(self.attachments, Unset):
+            attachments = self.attachments
+
+        dont_parse_links = self.dont_parse_links
 
         ref = self.ref
 
@@ -55,9 +67,14 @@ class SendTextBody:
         field_dict.update(
             {
                 "chatId": chat_id,
-                "text": text,
             }
         )
+        if text is not UNSET:
+            field_dict["text"] = text
+        if attachments is not UNSET:
+            field_dict["attachments"] = attachments
+        if dont_parse_links is not UNSET:
+            field_dict["dontParseLinks"] = dont_parse_links
         if ref is not UNSET:
             field_dict["ref"] = ref
         if notify is not UNSET:
@@ -74,7 +91,11 @@ class SendTextBody:
         d = dict(src_dict)
         chat_id = d.pop("chatId")
 
-        text = d.pop("text")
+        text = d.pop("text", UNSET)
+
+        attachments = cast(list[str], d.pop("attachments", UNSET))
+
+        dont_parse_links = d.pop("dontParseLinks", UNSET)
 
         ref = d.pop("ref", UNSET)
 
@@ -87,6 +108,8 @@ class SendTextBody:
         send_text_body = cls(
             chat_id=chat_id,
             text=text,
+            attachments=attachments,
+            dont_parse_links=dont_parse_links,
             ref=ref,
             notify=notify,
             reply_to=reply_to,

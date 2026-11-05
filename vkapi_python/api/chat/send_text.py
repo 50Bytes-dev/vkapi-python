@@ -100,12 +100,17 @@ def sync_detailed(
     client: AuthenticatedClient,
     body: SendTextBody,
 ) -> Response[ErrorResponse | SendTextResponse]:
-    """Send a text message
+    """Send a message
 
-     Sends a text from the account's VK page to a person or a group chat.
-    Every error carries a delivery outcome `code`: only `send_failed` (500)
-    means the message may have arrived; every other error means nothing was
-    sent. Answers within 8 s (9 s when the gateway solves a captcha).
+     Sends a message from the account's VK page to a person or a group chat:
+    a text, up to 10 attachments (`POST /media/photo`, `POST /wall/photos`),
+    or both. Every error carries a delivery outcome `code`: only
+    `send_failed` (500) means the message may have arrived; every other
+    error means nothing was sent. Answers within 7.5 s (9 s when the gateway
+    solves a captcha); a message with photos adds up to 1.5 s for their
+    check. The gateway sets no floor between sends: pace them
+    yourself. A send never waits for another send of the page: it answers
+    `busy` with `retryAfterMs`.
 
     Args:
         body (SendTextBody):
@@ -134,12 +139,17 @@ def sync(
     client: AuthenticatedClient,
     body: SendTextBody,
 ) -> ErrorResponse | SendTextResponse | None:
-    """Send a text message
+    """Send a message
 
-     Sends a text from the account's VK page to a person or a group chat.
-    Every error carries a delivery outcome `code`: only `send_failed` (500)
-    means the message may have arrived; every other error means nothing was
-    sent. Answers within 8 s (9 s when the gateway solves a captcha).
+     Sends a message from the account's VK page to a person or a group chat:
+    a text, up to 10 attachments (`POST /media/photo`, `POST /wall/photos`),
+    or both. Every error carries a delivery outcome `code`: only
+    `send_failed` (500) means the message may have arrived; every other
+    error means nothing was sent. Answers within 7.5 s (9 s when the gateway
+    solves a captcha); a message with photos adds up to 1.5 s for their
+    check. The gateway sets no floor between sends: pace them
+    yourself. A send never waits for another send of the page: it answers
+    `busy` with `retryAfterMs`.
 
     Args:
         body (SendTextBody):
@@ -163,12 +173,17 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     body: SendTextBody,
 ) -> Response[ErrorResponse | SendTextResponse]:
-    """Send a text message
+    """Send a message
 
-     Sends a text from the account's VK page to a person or a group chat.
-    Every error carries a delivery outcome `code`: only `send_failed` (500)
-    means the message may have arrived; every other error means nothing was
-    sent. Answers within 8 s (9 s when the gateway solves a captcha).
+     Sends a message from the account's VK page to a person or a group chat:
+    a text, up to 10 attachments (`POST /media/photo`, `POST /wall/photos`),
+    or both. Every error carries a delivery outcome `code`: only
+    `send_failed` (500) means the message may have arrived; every other
+    error means nothing was sent. Answers within 7.5 s (9 s when the gateway
+    solves a captcha); a message with photos adds up to 1.5 s for their
+    check. The gateway sets no floor between sends: pace them
+    yourself. A send never waits for another send of the page: it answers
+    `busy` with `retryAfterMs`.
 
     Args:
         body (SendTextBody):
@@ -195,12 +210,17 @@ async def asyncio(
     client: AuthenticatedClient,
     body: SendTextBody,
 ) -> ErrorResponse | SendTextResponse | None:
-    """Send a text message
+    """Send a message
 
-     Sends a text from the account's VK page to a person or a group chat.
-    Every error carries a delivery outcome `code`: only `send_failed` (500)
-    means the message may have arrived; every other error means nothing was
-    sent. Answers within 8 s (9 s when the gateway solves a captcha).
+     Sends a message from the account's VK page to a person or a group chat:
+    a text, up to 10 attachments (`POST /media/photo`, `POST /wall/photos`),
+    or both. Every error carries a delivery outcome `code`: only
+    `send_failed` (500) means the message may have arrived; every other
+    error means nothing was sent. Answers within 7.5 s (9 s when the gateway
+    solves a captcha); a message with photos adds up to 1.5 s for their
+    check. The gateway sets no floor between sends: pace them
+    yourself. A send never waits for another send of the page: it answers
+    `busy` with `retryAfterMs`.
 
     Args:
         body (SendTextBody):

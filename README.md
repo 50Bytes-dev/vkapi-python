@@ -1,6 +1,9 @@
 # vkapi-python
-A client library for accessing VKAPI (https://github.com/50Bytes-dev/vkapi), the gateway that holds the login
-into a personal VK page and sends text messages from it to people and to group chats.
+A client library for accessing VKAPI (https://github.com/50Bytes-dev/vkapi), the gateway that holds the login into a
+personal VK page and works from it: it sends messages with a text and up to 10 photos to people and to group chats,
+lists the page's conversations and the members of its chats, uploads a photo once for every chat, takes the photos
+of wall posts by id and deletes the page's messages for everyone. vkapi and maxapi share one contract; this package
+follows vkapi's version (2.0.0).
 
 The package is generated from the gateway's OpenAPI schema (`static/api/spec.yml` in vkapi; the gateway serves it at
 `/api/spec.yml`, with the Swagger UI at `/api/`). The full contract, with every code and when it comes, is
@@ -30,8 +33,9 @@ account = AuthenticatedClient(
 public = Client(base_url="http://localhost:5558")
 ```
 
-A send answers within 8 s (9 s when the gateway solves a captcha), and a status or connect that checks the login
-with VK takes up to 8-9 s: httpx's default timeout of 5 s is too short for the account client.
+A send answers within 7.5 s (9 s when the gateway solves a captcha), and a status or connect that checks the login
+with VK takes up to 8-9 s: httpx's default timeout of 5 s is too short for the account client. A photo upload
+(`api.media.upload_photo`) takes up to about 35 s: give its client a longer timeout.
 
 ## Calls
 Every operation is a module under `vkapi_python.api.<tag>` with four functions: `sync`, `sync_detailed`, `asyncio`
@@ -42,6 +46,7 @@ returns a `Response` with `status_code` and `parsed`.
 |---|---|
 | `api.health.get_health` | `GET /health` |
 | `api.admin.add_user` | `POST /admin/users` |
+| `api.admin.edit_user` | `PUT /admin/users/{userid}` |
 | `api.admin.delete_user` | `DELETE /admin/users/{userid}` |
 | `api.session.connect` | `POST /session/connect` |
 | `api.session.get_qr` | `GET /session/qr` |
@@ -51,6 +56,11 @@ returns a `Response` with `status_code` and `parsed`.
 | `api.session.disconnect` | `POST /session/disconnect` |
 | `api.chat.send_text` | `POST /chat/send/text` |
 | `api.chat.list_chats` | `GET /chat/list` |
+| `api.chat.chat_info` | `GET /chat/info` |
+| `api.chat.chat_members` | `GET /chat/members` |
+| `api.chat.delete_messages` | `POST /chat/delete` |
+| `api.media.upload_photo` | `POST /media/photo` |
+| `api.wall.wall_photos` | `POST /wall/photos` |
 
 Fields the gateway leaves out are `UNSET` (`from vkapi_python.types import UNSET`), which is falsy. Errors carry a
 machine `code`; it is absent on 401, which means the token is unknown or the account was deleted.
@@ -66,7 +76,7 @@ created = add_user.sync(
     body=AddUserBody(
         name="shop-12-vk",
         webhook="https://shop.example/webhook/vk?secret=s3cr3t",
-        events="Sync,QRAuthorized,AuthExpired,Disconnected,QRGenerated,QRScanned,QRCodeRequired,QRExpired,MessageOutcome",
+        events="Sync,QRAuthorized,AuthExpired,Disconnected,QRGenerated,QRScanned,QRCodeRequired,QRExpired,MessageOutcome,Paused,Resumed",
     ),
 )
 print(created.id, created.token)  # the token goes into the account client
@@ -113,7 +123,7 @@ print("connected:", status.connected, "VK page:", status.max_user_id)
 A paused page is resumed with `api.session.resume`; `body=ResumeBody(captcha_key="...")` carries the owner's answer
 to `status.captcha_image`, if there is one.
 
-### Send a text to a person or a group chat
+### Send a message to a person or a group chat
 
 ```python
 from vkapi_python.api.chat import send_text
@@ -125,25 +135,68 @@ res = send_text.sync(
     body=SendTextBody(chat_id=987654321, text="Заказ 123 готов к выдаче", ref="order-123"),
 )
 
-# A group chat: 2000000000 + the chat's number as this page sees it (vk.ru/im/convo/2000000001)
-res = send_text.sync(client=account, body=SendTextBody(chat_id=2000000001, text="Новый заказ 124"))
+# A group chat: 2000000000 + the chat's number as this page sees it (vk.ru/im/convo/2000000001),
+# with photos (up to 10); the text may then be empty
+res = send_text.sync(
+    client=account,
+    body=SendTextBody(
+        chat_id=2000000001,
+        text="Платье, 1200 ₽",
+        attachments=["photo1127016903_457239017_9b0e3c1a2f"],
+        dont_parse_links=True,
+    ),
+)
 
 if isinstance(res, ErrorResponse):
     if res.code == "send_failed":
         # The outcome is unknown: never resend. With a ref, a MessageOutcome webhook tells later.
+        ...
+    elif res.code == "send_rejected" and res.upstream_code == "busy":
+        # Nothing was sent: come again in res.retry_after_ms milliseconds.
+        ...
+    elif res.code == "attachment_rejected":
+        # VK refused a photo: upload it anew and send again.
         ...
     else:
         # Nothing was sent: not_connected, invalid_target, address_refused, address_not_found,
         # message_rejected, send_rejected (see res.upstream_code; res.paused and res.pause_reason when paused).
         ...
 else:
-    print("sent:", res.message_id)
+    print("sent:", res.message_id)  # a string; keep it to delete the message
+```
+
+### Photos
+
+```python
+from vkapi_python.api.media import upload_photo
+from vkapi_python.api.wall import wall_photos
+from vkapi_python.models import PhotoBody, WallPhotosBody
+
+# Once per page: the attachment goes to any of its chats
+photo = upload_photo.sync(client=account, body=PhotoBody(url="https://example.com/photo.jpg"))
+print(photo.attachment, photo.width, photo.height)  # or an ErrorResponse: invalid_image, fetch_failed, upload_failed
+
+# The photos of wall posts by id; a post VK does not give is found=False: upload its photos instead
+posts = wall_photos.sync(client=account, body=WallPhotosBody(posts=["-12345_678"]))
+for post in posts.posts:
+    print(post.post, post.found, [p.attachment for p in post.photos or []])
+```
+
+### Delete for everyone
+
+```python
+from vkapi_python.api.chat import delete_messages
+from vkapi_python.models import DeleteBody
+
+res = delete_messages.sync(client=account, body=DeleteBody(chat_id=2000000001, message_ids=["12031"]))
+for r in res.results:
+    print(r.message_id, r.status)  # deleted, too_old (past 24 hours), forbidden, not_found
 ```
 
 ### List and search the page's chats
 
 ```python
-from vkapi_python.api.chat import list_chats
+from vkapi_python.api.chat import chat_info, chat_members, list_chats
 from vkapi_python.types import UNSET
 
 # All conversations, page by page
@@ -156,19 +209,41 @@ while True:
         break
     offset = page.next_offset
 
-# Group chats only
-chats = list_chats.sync(client=account, filter_="chats", count=200)
+# Group chats and channels only
+chats = list_chats.sync(client=account, type_=["chat", "channel"], count=200)
 
-# Search by title or name; VK finds at most 255
-found = list_chats.sync(client=account, q="лимиты", count=20)
+# Search by title or name, group chats only; VK finds at most 255
+found = list_chats.sync(client=account, q="лимиты", type_=["chat"], count=20)
+
+# The last message of each, its text included, and given chats by id
+page = list_chats.sync(client=account, include=["lastMessage"], count=20)
+info = chat_info.sync(client=account, chat_id=[2000000001, 2000000002])  # info.items, info.missing
+
+# The first 200 members of each group chat and channel, and all members of one chat page by page
+page = list_chats.sync(client=account, type_=["chat"], include=["participants"], count=50)
+offset = 0
+while True:
+    members = chat_members.sync(client=account, chat_id=2000000001, offset=offset)
+    for m in members.items:
+        print(m.id, m.name, "admin:", m.is_admin)
+    if members.next_offset is UNSET:
+        break
+    offset = members.next_offset
 ```
+
+The gateway sets no bounds of its own beyond VK's (one call's most: 200 conversations, 100 ids, 200 members): how much
+to ask for is the project's to decide. A list with `include=participants` takes 0.5 s more per conversation.
+
+`type_` of a row is `user`, `chat`, `channel`, `group` or VK's own `email`; a person's row has `user_id`.
 
 An error (`page_paused`, `vk_error`, `not_connected`, `INVALID_INPUT`) comes back as an `ErrorResponse`.
 
 ### Parse a webhook
 
 Each event has its model; pick it by `type`. A model refuses a body of another type with `ValueError`. There are
-eleven events; since 1.4.0 the login can be followed from them alone:
+thirteen events; since 1.4.0 the login can be followed from them alone, and since 2.0.0 `PausedEvent` and
+`ResumedEvent` tell every account of a page about its pause (`pause_reason`, `upstream_code`,
+`captcha_solve_error`), so the status need not be polled for it:
 
 | Event | Fields besides `type`, `user_id`, `instance_id`, `instance_name`, `event_timestamp` |
 |---|---|
@@ -185,8 +260,9 @@ event carries a secret.
 
 ```python
 from vkapi_python.models import (
-    AuthExpiredEvent, DisconnectedEvent, LoggedOutEvent, MessageOutcomeEvent, QRAuthorizedEvent,
-    QRCodeRequiredEvent, QRExpiredEvent, QRGeneratedEvent, QRScannedEvent, ReconnectingEvent, SyncEvent,
+    AuthExpiredEvent, DisconnectedEvent, LoggedOutEvent, MessageOutcomeEvent, PausedEvent, QRAuthorizedEvent,
+    QRCodeRequiredEvent, QRExpiredEvent, QRGeneratedEvent, QRScannedEvent, ReconnectingEvent, ResumedEvent,
+    SyncEvent,
 )
 
 EVENTS = {
@@ -194,6 +270,7 @@ EVENTS = {
     "QRAuthorized": QRAuthorizedEvent, "QRExpired": QRExpiredEvent, "Sync": SyncEvent,
     "AuthExpired": AuthExpiredEvent, "Disconnected": DisconnectedEvent, "Reconnecting": ReconnectingEvent,
     "LoggedOut": LoggedOutEvent, "MessageOutcome": MessageOutcomeEvent,
+    "Paused": PausedEvent, "Resumed": ResumedEvent,
 }
 
 
@@ -214,6 +291,10 @@ elif isinstance(event, MessageOutcomeEvent):
     print(event.ref, "delivered" if event.delivered else "not delivered", event.message_id)
 elif isinstance(event, AuthExpiredEvent):
     print("login lost:", event.reason)  # token_revoked, page_blocked, refresh_failed
+elif isinstance(event, PausedEvent):
+    print("page paused:", event.pause_reason, event.upstream_code)  # resume with api.session.resume
+elif isinstance(event, ResumedEvent):
+    print("page resumed:", event.max_user_id)
 ```
 
 ### Async

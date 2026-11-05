@@ -21,8 +21,9 @@ class AddUserBody:
             Example: https://retail.example/api/messenger/webhook/34?secret=s3cr3t.
         events (str | Unset): Comma-separated event subscription of `EventType` names; other names, maxapi's `All`
             included,
-            are dropped, so `All` subscribes to nothing. `POST /session/connect` overwrites it with `subscribe`. Example:
-            Sync,QRAuthorized,AuthExpired,Disconnected,QRGenerated,QRScanned,QRCodeRequired,QRExpired,MessageOutcome.
+            are dropped, so `All` subscribes to nothing. `POST /session/connect` overwrites it with `subscribe`. Example: Sy
+            nc,QRAuthorized,AuthExpired,Disconnected,QRGenerated,QRScanned,QRCodeRequired,QRExpired,MessageOutcome,Paused,Re
+            sumed.
     """
 
     name: str | Unset = UNSET

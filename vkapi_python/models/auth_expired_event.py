@@ -15,8 +15,8 @@ class AuthExpiredEvent:
 
     Attributes:
         type_ (Literal['AuthExpired']):
-        reason (str): `token_revoked` (the login is erased), `page_blocked` (VK error 37; the
-            login is erased) or `refresh_failed` (three undecided token refreshes in
+        reason (str): `token_revoked` (the login is erased), `page_blocked` (VK error 37, or 5
+            with ban_info: the page is blocked; the login is erased) or `refresh_failed` (three undecided token refreshes in
             a row; the login is kept, disconnected, until a connect) Example: token_revoked.
         user_id (str): The account id (`userID` and `instanceID` are the same) Example:
             6f1c2d4e-8b3e-4035-ba87-3f96a0e3f5c0.

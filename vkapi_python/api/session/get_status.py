@@ -61,10 +61,10 @@ def sync_detailed(
 ) -> Response[ErrorResponse | StatusResponse]:
     """Get the account's VK session
 
-     Reports the stored login and the page's pause. When the page's liveness
-    interval is up, the login is first checked with VK (`users.get`, at most
-    8 s). Read `paused` before `connected`: a paused page answers
-    `connected` true without a VK call.
+     Reports the stored login, the page's name and photo, and the page's
+    pause. When the page's liveness interval is up, the login is first
+    checked with VK (`users.get`, at most 8 s). Read `paused` before
+    `connected`: a paused page answers `connected` true without a VK call.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -89,10 +89,10 @@ def sync(
 ) -> ErrorResponse | StatusResponse | None:
     """Get the account's VK session
 
-     Reports the stored login and the page's pause. When the page's liveness
-    interval is up, the login is first checked with VK (`users.get`, at most
-    8 s). Read `paused` before `connected`: a paused page answers
-    `connected` true without a VK call.
+     Reports the stored login, the page's name and photo, and the page's
+    pause. When the page's liveness interval is up, the login is first
+    checked with VK (`users.get`, at most 8 s). Read `paused` before
+    `connected`: a paused page answers `connected` true without a VK call.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -113,10 +113,10 @@ async def asyncio_detailed(
 ) -> Response[ErrorResponse | StatusResponse]:
     """Get the account's VK session
 
-     Reports the stored login and the page's pause. When the page's liveness
-    interval is up, the login is first checked with VK (`users.get`, at most
-    8 s). Read `paused` before `connected`: a paused page answers
-    `connected` true without a VK call.
+     Reports the stored login, the page's name and photo, and the page's
+    pause. When the page's liveness interval is up, the login is first
+    checked with VK (`users.get`, at most 8 s). Read `paused` before
+    `connected`: a paused page answers `connected` true without a VK call.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -139,10 +139,10 @@ async def asyncio(
 ) -> ErrorResponse | StatusResponse | None:
     """Get the account's VK session
 
-     Reports the stored login and the page's pause. When the page's liveness
-    interval is up, the login is first checked with VK (`users.get`, at most
-    8 s). Read `paused` before `connected`: a paused page answers
-    `connected` true without a VK call.
+     Reports the stored login, the page's name and photo, and the page's
+    pause. When the page's liveness interval is up, the login is first
+    checked with VK (`users.get`, at most 8 s). Read `paused` before
+    `connected`: a paused page answers `connected` true without a VK call.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
