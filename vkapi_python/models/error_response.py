@@ -24,16 +24,18 @@ class ErrorResponse:
                 `INTERNAL_ERROR`, `NOT_FOUND`. Login: `login_unavailable`,
                 `login_rate_limited`, `code_required`, `code_not_required`,
                 `already_logged_in`, `invalid_code`, `login_expired`,
-                `login_rejected`, `login_failed`. Delivery: `not_connected`,
+                `login_rejected`, `login_failed`, `login_limited`. Delivery: `not_connected`,
                 `invalid_target`, `address_not_found`, `address_refused`,
                 `send_rejected`, `message_rejected`, `attachment_rejected`,
-                `send_failed`. Other calls: `page_paused`, `page_busy`, `vk_error`. Photo:
+                `send_failed`. Other calls: `page_paused`, `page_busy`, `vk_error`,
+                `response_too_large`. Photo:
                 `invalid_image`, `fetch_failed`, `upload_failed`. Example: send_failed.
             upstream_code (str | Unset): The VK error number behind the answer as a string (`"984"`), or `"busy"`. Absent
                 when VK did not answer with an error, and on a pause that was already there. Example: 984.
             retry_after_ms (int | Unset): With `send_rejected` "busy" and `page_busy`: in how many milliseconds
                 the call may come again (the send in flight, the page's queue of VK
-                calls). Example: 2400.
+                calls). With `login_limited` and `login_rate_limited` (2.1.0): when a
+                login may start, or a code go, again. Example: 2400.
             paused (bool | Unset): Present (true) only when the page is paused; stop choosing every connection of this page.
             pause_reason (str | Unset): Why sending from the page is paused: `captcha` (VK error 14 the gateway
                 did not solve), `spam` (7, 9, 17, 29, 983, 984) or `access_denied` (15). Example: spam.

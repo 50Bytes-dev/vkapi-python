@@ -3,7 +3,7 @@ A client library for accessing VKAPI (https://github.com/50Bytes-dev/vkapi), the
 personal VK page and works from it: it sends messages with a text and up to 10 photos to people and to group chats,
 lists the page's conversations and the members of its chats, uploads a photo once for every chat, takes the photos
 of wall posts by id and deletes the page's messages for everyone. vkapi and maxapi share one contract; this package
-follows vkapi's version (2.0.3).
+follows vkapi's version (2.1.0).
 
 The package is generated from the gateway's OpenAPI schema (`static/api/spec.yml` in vkapi; the gateway serves it at
 `/api/spec.yml`, with the Swagger UI at `/api/`). The full contract, with every code and when it comes, is
@@ -98,7 +98,9 @@ res = connect.sync(
     ),
 )
 if isinstance(res, ErrorResponse):
-    raise RuntimeError(f"{res.code}: {res.error}")  # login_unavailable, not_connected, login_rate_limited, ...
+    if res.code in ("login_limited", "login_rate_limited"):  # VK limits logins (2.1.0), or one started < 10 s ago
+        retry_in(res.retry_after_ms)  # your code: start no login before then
+    raise RuntimeError(f"{res.code}: {res.error}")  # login_unavailable, not_connected, ...
 
 if not res.already_connected:
     # The QR comes in the QRGenerated webhook (see "Parse a webhook"); reading it here is optional and keeps
@@ -109,6 +111,8 @@ if not res.already_connected:
             submit_code.sync(client=account, body=CodeBody(code="123456"))
         elif qr.code == "already_logged_in":  # the login completed
             pass
+        elif qr.code == "login_limited":  # VK limited the logins (2.1.0): connect after retry_after_ms
+            retry_in(qr.retry_after_ms)
         else:  # login_expired, login_rejected, login_failed: connect again
             ...
     else:
