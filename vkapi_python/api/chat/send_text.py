@@ -108,7 +108,8 @@ def sync_detailed(
     `send_failed` (500) means the message may have arrived; every other
     error means nothing was sent. Answers within 7.5 s (9 s when the gateway
     solves a captcha); a message with photos adds up to 1.5 s for their
-    check. The gateway sets no floor between sends: pace them
+    check, unless the gateway gave them out or checked them in the last
+    24 h (2.1.1). The gateway sets no floor between sends: pace them
     yourself. A send never waits for another send of the page: it answers
     `busy` with `retryAfterMs`.
 
@@ -147,7 +148,8 @@ def sync(
     `send_failed` (500) means the message may have arrived; every other
     error means nothing was sent. Answers within 7.5 s (9 s when the gateway
     solves a captcha); a message with photos adds up to 1.5 s for their
-    check. The gateway sets no floor between sends: pace them
+    check, unless the gateway gave them out or checked them in the last
+    24 h (2.1.1). The gateway sets no floor between sends: pace them
     yourself. A send never waits for another send of the page: it answers
     `busy` with `retryAfterMs`.
 
@@ -181,7 +183,8 @@ async def asyncio_detailed(
     `send_failed` (500) means the message may have arrived; every other
     error means nothing was sent. Answers within 7.5 s (9 s when the gateway
     solves a captcha); a message with photos adds up to 1.5 s for their
-    check. The gateway sets no floor between sends: pace them
+    check, unless the gateway gave them out or checked them in the last
+    24 h (2.1.1). The gateway sets no floor between sends: pace them
     yourself. A send never waits for another send of the page: it answers
     `busy` with `retryAfterMs`.
 
@@ -218,7 +221,8 @@ async def asyncio(
     `send_failed` (500) means the message may have arrived; every other
     error means nothing was sent. Answers within 7.5 s (9 s when the gateway
     solves a captcha); a message with photos adds up to 1.5 s for their
-    check. The gateway sets no floor between sends: pace them
+    check, unless the gateway gave them out or checked them in the last
+    24 h (2.1.1). The gateway sets no floor between sends: pace them
     yourself. A send never waits for another send of the page: it answers
     `busy` with `retryAfterMs`.
 
