@@ -29,7 +29,8 @@ class ErrorResponse:
                 `send_rejected`, `message_rejected`, `attachment_rejected`,
                 `send_failed`. Other calls: `page_paused`, `page_busy`, `vk_error`,
                 `response_too_large`. Photo:
-                `invalid_image`, `fetch_failed`, `upload_failed`. Example: send_failed.
+                `invalid_image`, `fetch_failed`, `upload_failed`. Albums (2.2.0):
+                `album_refused`, `album_full`. Example: send_failed.
             upstream_code (str | Unset): The VK error number behind the answer as a string (`"984"`), or `"busy"`. Absent
                 when VK did not answer with an error, and on a pause that was already there. Example: 984.
             retry_after_ms (int | Unset): With `send_rejected` "busy" and `page_busy`: in how many milliseconds
@@ -51,6 +52,10 @@ class ErrorResponse:
                 `timeout`, and a slider answer VK did not take is `failed`. Example: timeout.
             rejected_attachments (list[str] | Unset): With `attachment_rejected`, the photos VK does not give the page
                 Example: ['photo-12345_457239001_ak11'].
+            attachment (str | Unset): `POST /album/photo` (2.2.0): a failure after a copy of the photo was
+                made: the copy, in the album without its caption (the caption failed),
+                or in the page's saved photos (the move failed; in the album when VK's
+                answer was lost) Example: photo1127016903_457239200.
     """
 
     success: bool
@@ -62,6 +67,7 @@ class ErrorResponse:
     pause_reason: str | Unset = UNSET
     captcha_solve_error: str | Unset = UNSET
     rejected_attachments: list[str] | Unset = UNSET
+    attachment: str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -85,6 +91,8 @@ class ErrorResponse:
         if not isinstance(self.rejected_attachments, Unset):
             rejected_attachments = self.rejected_attachments
 
+        attachment = self.attachment
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -107,6 +115,8 @@ class ErrorResponse:
             field_dict["captchaSolveError"] = captcha_solve_error
         if rejected_attachments is not UNSET:
             field_dict["rejectedAttachments"] = rejected_attachments
+        if attachment is not UNSET:
+            field_dict["attachment"] = attachment
 
         return field_dict
 
@@ -131,6 +141,8 @@ class ErrorResponse:
 
         rejected_attachments = cast(list[str], d.pop("rejectedAttachments", UNSET))
 
+        attachment = d.pop("attachment", UNSET)
+
         error_response = cls(
             success=success,
             error=error,
@@ -141,6 +153,7 @@ class ErrorResponse:
             pause_reason=pause_reason,
             captcha_solve_error=captcha_solve_error,
             rejected_attachments=rejected_attachments,
+            attachment=attachment,
         )
 
         error_response.additional_properties = d

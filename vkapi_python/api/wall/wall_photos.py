@@ -96,7 +96,9 @@ def sync_detailed(
     attachments a send takes, in full size and in the post's order, with one
     `wall.getById`. A post VK does not give (deleted, hidden, a wrong id) is
     `found: false`: upload its photos with `POST /media/photo` instead. A
-    repost without photos of its own gives the reposted post's. Within 8 s.
+    repost without photos of its own gives the reposted post's. Each photo
+    has the address of its largest copy of at most 2560 px (`url`, 2.2.0),
+    which `POST /album/photo` takes for a community's album. Within 8 s.
 
     Args:
         body (WallPhotosBody):
@@ -131,7 +133,9 @@ def sync(
     attachments a send takes, in full size and in the post's order, with one
     `wall.getById`. A post VK does not give (deleted, hidden, a wrong id) is
     `found: false`: upload its photos with `POST /media/photo` instead. A
-    repost without photos of its own gives the reposted post's. Within 8 s.
+    repost without photos of its own gives the reposted post's. Each photo
+    has the address of its largest copy of at most 2560 px (`url`, 2.2.0),
+    which `POST /album/photo` takes for a community's album. Within 8 s.
 
     Args:
         body (WallPhotosBody):
@@ -161,7 +165,9 @@ async def asyncio_detailed(
     attachments a send takes, in full size and in the post's order, with one
     `wall.getById`. A post VK does not give (deleted, hidden, a wrong id) is
     `found: false`: upload its photos with `POST /media/photo` instead. A
-    repost without photos of its own gives the reposted post's. Within 8 s.
+    repost without photos of its own gives the reposted post's. Each photo
+    has the address of its largest copy of at most 2560 px (`url`, 2.2.0),
+    which `POST /album/photo` takes for a community's album. Within 8 s.
 
     Args:
         body (WallPhotosBody):
@@ -194,7 +200,9 @@ async def asyncio(
     attachments a send takes, in full size and in the post's order, with one
     `wall.getById`. A post VK does not give (deleted, hidden, a wrong id) is
     `found: false`: upload its photos with `POST /media/photo` instead. A
-    repost without photos of its own gives the reposted post's. Within 8 s.
+    repost without photos of its own gives the reposted post's. Each photo
+    has the address of its largest copy of at most 2560 px (`url`, 2.2.0),
+    which `POST /album/photo` takes for a community's album. Within 8 s.
 
     Args:
         body (WallPhotosBody):

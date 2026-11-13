@@ -2,8 +2,9 @@
 A client library for accessing VKAPI (https://github.com/50Bytes-dev/vkapi), the gateway that holds the login into a
 personal VK page and works from it: it sends messages with a text and up to 10 photos to people and to group chats,
 lists the page's conversations and the members of its chats, uploads a photo once for every chat, takes the photos
-of wall posts by id and deletes the page's messages for everyone. vkapi and maxapi share one contract; this package
-follows vkapi's version (2.1.1).
+of wall posts by id, deletes the page's messages for everyone, and keeps the photo albums of the page and of the
+communities it manages (2.2.0, VK's own). vkapi and maxapi share one contract; this package follows vkapi's version
+(2.2.0).
 
 The package is generated from the gateway's OpenAPI schema (`static/api/spec.yml` in vkapi; the gateway serves it at
 `/api/spec.yml`, with the Swagger UI at `/api/`). The full contract, with every code and when it comes, is
@@ -35,7 +36,8 @@ public = Client(base_url="http://localhost:5558")
 
 A send answers within 7.5 s (9 s when the gateway solves a captcha), and a status or connect that checks the login
 with VK takes up to 8-9 s: httpx's default timeout of 5 s is too short for the account client. A photo upload
-(`api.media.upload_photo`) takes up to about 35 s: give its client a longer timeout.
+(`api.media.upload_photo`, `api.album.add_album_photo`) takes up to about 45 s (50 s for a `photo` into a community's
+album): give its client a longer timeout.
 
 ## Calls
 Every operation is a module under `vkapi_python.api.<tag>` with four functions: `sync`, `sync_detailed`, `asyncio`
@@ -61,6 +63,10 @@ returns a `Response` with `status_code` and `parsed`.
 | `api.chat.delete_messages` | `POST /chat/delete` |
 | `api.media.upload_photo` | `POST /media/photo` |
 | `api.wall.wall_photos` | `POST /wall/photos` |
+| `api.album.list_albums` | `GET /album/list` |
+| `api.album.create_album` | `POST /album/create` |
+| `api.album.edit_album` | `POST /album/edit` |
+| `api.album.add_album_photo` | `POST /album/photo` |
 
 Fields the gateway leaves out are `UNSET` (`from vkapi_python.types import UNSET`), which is falsy. Errors carry a
 machine `code`; it is absent on 401, which means the token is unknown or the account was deleted.
@@ -183,8 +189,41 @@ print(photo.attachment, photo.width, photo.height)  # or an ErrorResponse: inval
 # The photos of wall posts by id; a post VK does not give is found=False: upload its photos instead
 posts = wall_photos.sync(client=account, body=WallPhotosBody(posts=["-12345_678"]))
 for post in posts.posts:
-    print(post.post, post.found, [p.attachment for p in post.photos or []])
+    print(post.post, post.found, [(p.attachment, p.url) for p in post.photos or []])
 ```
+
+### Albums
+
+```python
+from vkapi_python.api.album import add_album_photo, create_album, edit_album, list_albums
+from vkapi_python.models import AlbumCreateBody, AlbumEditBody, AlbumPhotoBody, ErrorResponse
+
+# The albums of a community the page manages (its id negated); left out, the page's own
+albums = list_albums.sync(client=account, owner_id=-210132800)
+for a in albums.albums:
+    print(a.album, a.title, a.size, "can upload:", a.can_upload)
+
+# A new album of the community, and an edit; one switch alone keeps the other as it is
+new = create_album.sync(
+    client=account, body=AlbumCreateBody(owner_id=-210132800, title="Платья", upload_by_admins_only=True)
+)
+edit_album.sync(client=account, body=AlbumEditBody(album=new.album.album, comments_disabled=True))
+
+# A photo with its caption: into a community's album give the url (POST /wall/photos gives it for each photo);
+# `photo` (an attachment) is copied into the page's own album, and costs a photos.getById for a community's
+res = add_album_photo.sync(
+    client=account,
+    body=AlbumPhotoBody(album="-210132800_312370605", caption="Платье, 1200 ₽", url="https://sun9-1.userapi.com/..."),
+)
+if isinstance(res, ErrorResponse):
+    # album_refused (VK refuses the album: no pause), album_full, attachment_rejected, fetch_failed, upload_failed
+    # (the photo may be in the album all the same: look before repeating), page_paused, page_busy, not_connected
+    ...
+else:
+    print(res.attachment, res.how)  # uploaded or copied
+```
+
+A multipart file goes as `AlbumPhotoUpload(album=..., caption=..., file=File(...))`, as with `PhotoUpload`.
 
 ### Delete for everyone
 
@@ -346,4 +385,4 @@ uv sync
 `vkapi_python`. The generator is pinned below 0.29: 0.29 writes code that needs Python 3.11 (`typing.Self`), and the
 package supports 3.10.
 
-`templates/client.py.jinja` overrides the generator's client template in one respect: `token` and the headers (which carry the token once a request is made) are left out of the clients' `repr`, so a client in a log or a traceback does not show the token. `templates/model.py.jinja` overrides the generator's model template the same way for the fields that carry a VK token (`auth_token` of `QRAuthorizedEvent`): they are left out of the model's `repr`. When the generator is upgraded, copy its new `client.py.jinja` and `model.py.jinja` and redo these changes.
+`templates/client.py.jinja` overrides the generator's client template in one respect: `token` and the headers (which carry the token once a request is made) are left out of the clients' `repr`, so a client in a log or a traceback does not show the token. `templates/model.py.jinja` overrides the generator's model template the same way for the fields that carry a VK token (`auth_token` of `QRAuthorizedEvent`): they are left out of the model's `repr`. `templates/endpoint_module.py.jinja` overrides the endpoint template for the calls with two bodies (`upload_photo`, `add_album_photo`): the multipart body gets no hand-set `Content-Type`, so httpx adds its boundary, and `Unset` is imported, which the generator leaves out there (before 2.2.0 `api.media.upload_photo` failed to import for it). When the generator is upgraded, copy its new `client.py.jinja`, `model.py.jinja` and `endpoint_module.py.jinja` and redo these changes.

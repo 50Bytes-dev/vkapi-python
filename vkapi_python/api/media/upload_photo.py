@@ -9,7 +9,7 @@ from ...models.error_response import ErrorResponse
 from ...models.photo_body import PhotoBody
 from ...models.photo_response import PhotoResponse
 from ...models.photo_upload import PhotoUpload
-from ...types import UNSET, Response
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(

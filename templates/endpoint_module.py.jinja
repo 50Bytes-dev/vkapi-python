@@ -1,5 +1,7 @@
-{# vkapi-python: the generator's endpoint_module.py.jinja (openapi-python-client 0.28), with one change: a
-   multipart body among several gets no hand-set Content-Type, so that httpx adds its boundary. #}
+{# vkapi-python: the generator's endpoint_module.py.jinja (openapi-python-client 0.28), with two changes: a
+   multipart body among several gets no hand-set Content-Type, so that httpx adds its boundary; and Unset is
+   imported, which the generator leaves out of an operation with several bodies (`body: A | B | Unset`), so that
+   such a module fails to import (ruff drops the import where it is unused). #}
 from http import HTTPStatus
 from typing import Any, cast
 from urllib.parse import quote
@@ -7,7 +9,7 @@ from urllib.parse import quote
 import httpx
 
 from ...client import AuthenticatedClient, Client
-from ...types import Response, UNSET
+from ...types import Response, UNSET, Unset
 from ... import errors
 
 {% for relative in endpoint.relative_imports | sort %}

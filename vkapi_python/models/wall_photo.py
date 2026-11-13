@@ -18,11 +18,16 @@ class WallPhoto:
         attachment (str):  Example: photo-12345_457239001_ak11.
         width (int | Unset): The largest size VK has Example: 2560.
         height (int | Unset):  Example: 1706.
+        url (str | Unset): The address of its largest copy of at most 2560 px on the longer side on
+            VK's servers, what an upload keeps (2.2.0); absent when VK gives none. `POST /album/photo` takes it as `url` to
+            put the photo into a
+            community's album without asking VK for the photo (`photos.getById`) Example: https://sun9-1.userapi.com/....
     """
 
     attachment: str
     width: int | Unset = UNSET
     height: int | Unset = UNSET
+    url: str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -31,6 +36,8 @@ class WallPhoto:
         width = self.width
 
         height = self.height
+
+        url = self.url
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -43,6 +50,8 @@ class WallPhoto:
             field_dict["width"] = width
         if height is not UNSET:
             field_dict["height"] = height
+        if url is not UNSET:
+            field_dict["url"] = url
 
         return field_dict
 
@@ -55,10 +64,13 @@ class WallPhoto:
 
         height = d.pop("height", UNSET)
 
+        url = d.pop("url", UNSET)
+
         wall_photo = cls(
             attachment=attachment,
             width=width,
             height=height,
+            url=url,
         )
 
         wall_photo.additional_properties = d

@@ -2,6 +2,14 @@
 
 from .add_user_body import AddUserBody
 from .add_user_response import AddUserResponse
+from .album import Album
+from .album_create_body import AlbumCreateBody
+from .album_edit_body import AlbumEditBody
+from .album_list_response import AlbumListResponse
+from .album_photo_body import AlbumPhotoBody
+from .album_photo_response import AlbumPhotoResponse
+from .album_photo_upload import AlbumPhotoUpload
+from .album_response import AlbumResponse
 from .auth_expired_event import AuthExpiredEvent
 from .chat_info_response import ChatInfoResponse
 from .chat_list_item import ChatListItem
@@ -51,6 +59,14 @@ from .wall_post import WallPost
 __all__ = (
     "AddUserBody",
     "AddUserResponse",
+    "Album",
+    "AlbumCreateBody",
+    "AlbumEditBody",
+    "AlbumListResponse",
+    "AlbumPhotoBody",
+    "AlbumPhotoResponse",
+    "AlbumPhotoUpload",
+    "AlbumResponse",
     "AuthExpiredEvent",
     "ChatInfoResponse",
     "ChatListItem",
