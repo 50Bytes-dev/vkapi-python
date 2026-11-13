@@ -41,6 +41,8 @@ from .chat_members_response import ChatMembersResponse
 from .code_body import CodeBody
 from .code_response import CodeResponse
 from .comment_author import CommentAuthor
+from .community import Community
+from .community_vk import CommunityVk
 from .connect_body import ConnectBody
 from .connect_response import ConnectResponse
 from .delete_body import DeleteBody
@@ -51,6 +53,13 @@ from .edit_user_body import EditUserBody
 from .edit_user_response import EditUserResponse
 from .error_response import ErrorResponse
 from .event_type import EventType
+from .group_addresses_response import GroupAddressesResponse
+from .group_addresses_response_addresses_item import GroupAddressesResponseAddressesItem
+from .group_info_response import GroupInfoResponse
+from .group_list_response import GroupListResponse
+from .group_members_response import GroupMembersResponse
+from .group_settings_response import GroupSettingsResponse
+from .group_settings_response_settings import GroupSettingsResponseSettings
 from .health_response import HealthResponse
 from .last_message import LastMessage
 from .logged_out_event import LoggedOutEvent
@@ -124,6 +133,8 @@ __all__ = (
     "CodeBody",
     "CodeResponse",
     "CommentAuthor",
+    "Community",
+    "CommunityVk",
     "ConnectBody",
     "ConnectResponse",
     "DeleteBody",
@@ -134,6 +145,13 @@ __all__ = (
     "EditUserResponse",
     "ErrorResponse",
     "EventType",
+    "GroupAddressesResponse",
+    "GroupAddressesResponseAddressesItem",
+    "GroupInfoResponse",
+    "GroupListResponse",
+    "GroupMembersResponse",
+    "GroupSettingsResponse",
+    "GroupSettingsResponseSettings",
     "HealthResponse",
     "LastMessage",
     "LoggedOutEvent",

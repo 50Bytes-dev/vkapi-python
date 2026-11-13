@@ -30,7 +30,8 @@ class ErrorResponse:
                 `send_failed`. Other calls: `page_paused`, `page_busy`, `vk_error`,
                 `response_too_large`. Photo:
                 `invalid_image`, `fetch_failed`, `upload_failed`. Albums (2.2.0):
-                `album_refused`, `album_full`. Comments (2.3.0): `comment_refused`. Example: send_failed.
+                `album_refused`, `album_full`. Comments (2.3.0): `comment_refused`.
+                Communities (2.4.0): `group_refused`. Example: send_failed.
             upstream_code (str | Unset): The VK error number behind the answer as a string (`"984"`), or `"busy"`. Absent
                 when VK did not answer with an error, and on a pause that was already there. Example: 984.
             retry_after_ms (int | Unset): With `send_rejected` "busy" and `page_busy`: in how many milliseconds

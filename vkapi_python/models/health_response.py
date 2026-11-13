@@ -15,7 +15,7 @@ class HealthResponse:
     Attributes:
         success (bool): false when the database does not answer Example: True.
         status (str): `ok`, or `degraded` when the database does not answer Example: ok.
-        version (str):  Example: 2.3.0.
+        version (str):  Example: 2.4.0.
         uptime_seconds (int):  Example: 12345.
         db_ok (bool):  Example: True.
         goroutines (int):  Example: 12.
