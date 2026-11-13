@@ -30,7 +30,7 @@ class ErrorResponse:
                 `send_failed`. Other calls: `page_paused`, `page_busy`, `vk_error`,
                 `response_too_large`. Photo:
                 `invalid_image`, `fetch_failed`, `upload_failed`. Albums (2.2.0):
-                `album_refused`, `album_full`. Example: send_failed.
+                `album_refused`, `album_full`. Comments (2.3.0): `comment_refused`. Example: send_failed.
             upstream_code (str | Unset): The VK error number behind the answer as a string (`"984"`), or `"busy"`. Absent
                 when VK did not answer with an error, and on a pause that was already there. Example: 984.
             retry_after_ms (int | Unset): With `send_rejected` "busy" and `page_busy`: in how many milliseconds
@@ -50,8 +50,8 @@ class ErrorResponse:
                 offered nothing else) and `page_changed` mean the solver may need a new
                 browser recording; a slider VK offered with no time left to drag it is
                 `timeout`, and a slider answer VK did not take is `failed`. Example: timeout.
-            rejected_attachments (list[str] | Unset): With `attachment_rejected`, the photos VK does not give the page
-                Example: ['photo-12345_457239001_ak11'].
+            rejected_attachments (list[str] | Unset): With `attachment_rejected`, the photos VK does not give the page, or
+                refuses it on an album call Example: ['photo-12345_457239001_ak11'].
             attachment (str | Unset): `POST /album/photo` (2.2.0): a failure after a copy of the photo was
                 made: the copy, in the album without its caption (the caption failed),
                 or in the page's saved photos (the move failed; in the album when VK's
