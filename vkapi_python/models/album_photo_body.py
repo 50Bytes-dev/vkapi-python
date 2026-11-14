@@ -25,6 +25,10 @@ class AlbumPhotoBody:
         photo (str | Unset): A photo VK has, `photo<owner_id>_<id>[_<access_key>]`. Copied into the page's own album;
             into a community's, found with `photos.getById` and uploaded anew Example:
             photo-219994268_457445460_73cdc6dd4c0351c2b9.
+        ref (str | Unset): 2.5.0: the caller's key of this photo, at most 128 bytes (empty: none),
+            the account's own, held 24 h: a repeat of the call with it gets the
+            first call's answer (`repeated`). The same `ref` with another album,
+            caption or photo is refused. Not the `ref` of `POST /chat/send/text` Example: sku-1042-photo-1.
     """
 
     album: str
@@ -32,6 +36,7 @@ class AlbumPhotoBody:
     url: str | Unset = UNSET
     data: str | Unset = UNSET
     photo: str | Unset = UNSET
+    ref: str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -44,6 +49,8 @@ class AlbumPhotoBody:
         data = self.data
 
         photo = self.photo
+
+        ref = self.ref
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -60,6 +67,8 @@ class AlbumPhotoBody:
             field_dict["data"] = data
         if photo is not UNSET:
             field_dict["photo"] = photo
+        if ref is not UNSET:
+            field_dict["ref"] = ref
 
         return field_dict
 
@@ -76,12 +85,15 @@ class AlbumPhotoBody:
 
         photo = d.pop("photo", UNSET)
 
+        ref = d.pop("ref", UNSET)
+
         album_photo_body = cls(
             album=album,
             caption=caption,
             url=url,
             data=data,
             photo=photo,
+            ref=ref,
         )
 
         album_photo_body.additional_properties = d

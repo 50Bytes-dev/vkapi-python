@@ -109,8 +109,18 @@ def sync_detailed(
     for the photos (`photos.getById`, the method whose quota paused pages in
     November 2026): one VK still gives is `kept`, the others `deleted`. When
     only that read fails, the delete is done all the same: `checked` false and
-    every photo in `unchecked`. Every page forgets the photos: a send asks VK
-    for them again. **A deleted photo leaves the messages sent with it**
+    every photo in `unchecked`. When `photos.delete` itself fails in a way that
+    may have deleted something or says nothing of each photo, the gateway reads
+    the photos once all the same (the same single `photos.getById`): a lost
+    answer (none once the call reached VK, a timeout, one the gateway could not
+    read) or VK's 1, 10, 13 or 995 read is `200` with `answerLost`; a refusal
+    of the call (`403` `album_refused`, `422` `attachment_rejected` or
+    `album_full`) keeps its answer and adds `deleted`, `kept` and `checked`
+    true; a read that fails too adds `checked` false to the delete's failure,
+    and its own failure's effects run (a pause it set is told). No read for a
+    call that never reached VK, nor after a stop signal, a dead token, a
+    captcha or any other VK error on the delete. Every page forgets the photos:
+    a send asks VK for them again. **A deleted photo leaves the messages sent with it**
     (checked live), and comes back into them on a restore. `POST /album/photo/restore` brings one back;
     for how long,
     VK does not say. Each VK call has 12 s, a captcha's solving of up to 10 s included, within 25 s, as
@@ -152,8 +162,18 @@ def sync(
     for the photos (`photos.getById`, the method whose quota paused pages in
     November 2026): one VK still gives is `kept`, the others `deleted`. When
     only that read fails, the delete is done all the same: `checked` false and
-    every photo in `unchecked`. Every page forgets the photos: a send asks VK
-    for them again. **A deleted photo leaves the messages sent with it**
+    every photo in `unchecked`. When `photos.delete` itself fails in a way that
+    may have deleted something or says nothing of each photo, the gateway reads
+    the photos once all the same (the same single `photos.getById`): a lost
+    answer (none once the call reached VK, a timeout, one the gateway could not
+    read) or VK's 1, 10, 13 or 995 read is `200` with `answerLost`; a refusal
+    of the call (`403` `album_refused`, `422` `attachment_rejected` or
+    `album_full`) keeps its answer and adds `deleted`, `kept` and `checked`
+    true; a read that fails too adds `checked` false to the delete's failure,
+    and its own failure's effects run (a pause it set is told). No read for a
+    call that never reached VK, nor after a stop signal, a dead token, a
+    captcha or any other VK error on the delete. Every page forgets the photos:
+    a send asks VK for them again. **A deleted photo leaves the messages sent with it**
     (checked live), and comes back into them on a restore. `POST /album/photo/restore` brings one back;
     for how long,
     VK does not say. Each VK call has 12 s, a captcha's solving of up to 10 s included, within 25 s, as
@@ -190,8 +210,18 @@ async def asyncio_detailed(
     for the photos (`photos.getById`, the method whose quota paused pages in
     November 2026): one VK still gives is `kept`, the others `deleted`. When
     only that read fails, the delete is done all the same: `checked` false and
-    every photo in `unchecked`. Every page forgets the photos: a send asks VK
-    for them again. **A deleted photo leaves the messages sent with it**
+    every photo in `unchecked`. When `photos.delete` itself fails in a way that
+    may have deleted something or says nothing of each photo, the gateway reads
+    the photos once all the same (the same single `photos.getById`): a lost
+    answer (none once the call reached VK, a timeout, one the gateway could not
+    read) or VK's 1, 10, 13 or 995 read is `200` with `answerLost`; a refusal
+    of the call (`403` `album_refused`, `422` `attachment_rejected` or
+    `album_full`) keeps its answer and adds `deleted`, `kept` and `checked`
+    true; a read that fails too adds `checked` false to the delete's failure,
+    and its own failure's effects run (a pause it set is told). No read for a
+    call that never reached VK, nor after a stop signal, a dead token, a
+    captcha or any other VK error on the delete. Every page forgets the photos:
+    a send asks VK for them again. **A deleted photo leaves the messages sent with it**
     (checked live), and comes back into them on a restore. `POST /album/photo/restore` brings one back;
     for how long,
     VK does not say. Each VK call has 12 s, a captcha's solving of up to 10 s included, within 25 s, as
@@ -231,8 +261,18 @@ async def asyncio(
     for the photos (`photos.getById`, the method whose quota paused pages in
     November 2026): one VK still gives is `kept`, the others `deleted`. When
     only that read fails, the delete is done all the same: `checked` false and
-    every photo in `unchecked`. Every page forgets the photos: a send asks VK
-    for them again. **A deleted photo leaves the messages sent with it**
+    every photo in `unchecked`. When `photos.delete` itself fails in a way that
+    may have deleted something or says nothing of each photo, the gateway reads
+    the photos once all the same (the same single `photos.getById`): a lost
+    answer (none once the call reached VK, a timeout, one the gateway could not
+    read) or VK's 1, 10, 13 or 995 read is `200` with `answerLost`; a refusal
+    of the call (`403` `album_refused`, `422` `attachment_rejected` or
+    `album_full`) keeps its answer and adds `deleted`, `kept` and `checked`
+    true; a read that fails too adds `checked` false to the delete's failure,
+    and its own failure's effects run (a pause it set is told). No read for a
+    call that never reached VK, nor after a stop signal, a dead token, a
+    captcha or any other VK error on the delete. Every page forgets the photos:
+    a send asks VK for them again. **A deleted photo leaves the messages sent with it**
     (checked live), and comes back into them on a restore. `POST /album/photo/restore` brings one back;
     for how long,
     VK does not say. Each VK call has 12 s, a captcha's solving of up to 10 s included, within 25 s, as

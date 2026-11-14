@@ -65,6 +65,7 @@ from .last_message import LastMessage
 from .logged_out_event import LoggedOutEvent
 from .message_outcome_event import MessageOutcomeEvent
 from .message_response import MessageResponse
+from .page_photos import PagePhotos
 from .participant import Participant
 from .paused_event import PausedEvent
 from .photo_body import PhotoBody
@@ -72,6 +73,7 @@ from .photo_comment import PhotoComment
 from .photo_comments_response import PhotoCommentsResponse
 from .photo_response import PhotoResponse
 from .photo_upload import PhotoUpload
+from .photo_work_window import PhotoWorkWindow
 from .qr_authorized_event import QRAuthorizedEvent
 from .qr_code_required_event import QRCodeRequiredEvent
 from .qr_expired_event import QRExpiredEvent
@@ -157,6 +159,7 @@ __all__ = (
     "LoggedOutEvent",
     "MessageOutcomeEvent",
     "MessageResponse",
+    "PagePhotos",
     "Participant",
     "PausedEvent",
     "PhotoBody",
@@ -164,6 +167,7 @@ __all__ = (
     "PhotoCommentsResponse",
     "PhotoResponse",
     "PhotoUpload",
+    "PhotoWorkWindow",
     "QRAuthorizedEvent",
     "QRCodeRequiredEvent",
     "QRExpiredEvent",

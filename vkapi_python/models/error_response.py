@@ -55,8 +55,45 @@ class ErrorResponse:
                 refuses it on an album call Example: ['photo-12345_457239001_ak11'].
             attachment (str | Unset): `POST /album/photo` (2.2.0): a failure after a copy of the photo was
                 made: the copy, in the album without its caption (the caption failed),
-                or in the page's saved photos (the move failed; in the album when VK's
-                answer was lost) Example: photo1127016903_457239200.
+                or in the page's saved photos (the move failed and the gateway could
+                not delete the copy; in the album when VK's answer was lost) Example: photo1127016903_457239200.
+            saved (str | Unset): `POST /album/photo` (2.5.0), on every failure but `INVALID_INPUT`:
+                what became of the photo. "no": nothing of the call is in the album.
+                "maybe": `photos.save` of the upload or `photos.move` of the copy went
+                out and its answer was lost (no answer, cut, VK's 1, 10, 13 or 995); the
+                photo may be in the album. "yes": the photo is in the album without
+                its caption (`attachment`). Example: maybe.
+            stage (str | Unset): `POST /album/photo` (2.5.0): the step that failed. `fetch` (the url,
+                or the image of a `photo` on VK's servers), `source` (`photos.getById`
+                of a `photo` going into a community's album), `prepare` (the JPEG, or
+                the gateway busy with other photos), `server`
+                (`photos.getUploadServer`), `upload` (the file posted), `save`
+                (`photos.save`), `copy` (`photos.copy`), `move` (`photos.move`),
+                `caption` (`photos.edit` of the copy's caption). Absent without a
+                connected login, and on a page paused before the first VK call. Example: save.
+            copy_removed (bool | Unset): `POST /album/photo` (2.5.0), after VK refused to move the copy into
+                the album: true, the copy is deleted from the page's saved photos (no
+                `attachment`); false, it stays there (`attachment`)
+            deleted (list[str] | Unset): `POST /album/photo/delete` (2.5.0): VK refused the delete and the gateway's
+                read of the photos afterwards answered: the photos VK no longer gives
+            kept (list[str] | Unset): With `deleted`, the photos VK still gives
+            checked (bool | Unset): Whether the gateway could look after a write whose outcome VK did
+                not tell. `POST /album/photo` (2.5.0), with `saved` "maybe": true,
+                the gateway looked at the album once (`photos.get`) and did not find
+                the photo for sure; false, it could not look (no time, the page
+                paused, VK did not answer the look); with `saved` "yes": true, the
+                look found the copy whose move was lost and its caption failed.
+                `POST /album/photo/delete` (2.5.0): true when the gateway read the
+                photos after the failed delete (`deleted` and `kept`), false when
+                that read failed too, or gave none of the photos after a refusal
+                (gone, or no longer the page's: VK answers both alike)
+            repeated (bool | Unset): `POST /album/photo` (2.5.0): present (true) when the answer is that
+                of an earlier call with the same `ref`: its stored answer as it was,
+                or the answer to a first call cut by a stop of the gateway or still
+                running
+            pending (bool | Unset): `POST /album/photo` (2.5.0): present (true) when the first call with
+                the same `ref` was still running when this repeat's request ended;
+                repeat later for its answer
     """
 
     success: bool
@@ -69,6 +106,14 @@ class ErrorResponse:
     captcha_solve_error: str | Unset = UNSET
     rejected_attachments: list[str] | Unset = UNSET
     attachment: str | Unset = UNSET
+    saved: str | Unset = UNSET
+    stage: str | Unset = UNSET
+    copy_removed: bool | Unset = UNSET
+    deleted: list[str] | Unset = UNSET
+    kept: list[str] | Unset = UNSET
+    checked: bool | Unset = UNSET
+    repeated: bool | Unset = UNSET
+    pending: bool | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -94,6 +139,26 @@ class ErrorResponse:
 
         attachment = self.attachment
 
+        saved = self.saved
+
+        stage = self.stage
+
+        copy_removed = self.copy_removed
+
+        deleted: list[str] | Unset = UNSET
+        if not isinstance(self.deleted, Unset):
+            deleted = self.deleted
+
+        kept: list[str] | Unset = UNSET
+        if not isinstance(self.kept, Unset):
+            kept = self.kept
+
+        checked = self.checked
+
+        repeated = self.repeated
+
+        pending = self.pending
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -118,6 +183,22 @@ class ErrorResponse:
             field_dict["rejectedAttachments"] = rejected_attachments
         if attachment is not UNSET:
             field_dict["attachment"] = attachment
+        if saved is not UNSET:
+            field_dict["saved"] = saved
+        if stage is not UNSET:
+            field_dict["stage"] = stage
+        if copy_removed is not UNSET:
+            field_dict["copyRemoved"] = copy_removed
+        if deleted is not UNSET:
+            field_dict["deleted"] = deleted
+        if kept is not UNSET:
+            field_dict["kept"] = kept
+        if checked is not UNSET:
+            field_dict["checked"] = checked
+        if repeated is not UNSET:
+            field_dict["repeated"] = repeated
+        if pending is not UNSET:
+            field_dict["pending"] = pending
 
         return field_dict
 
@@ -144,6 +225,22 @@ class ErrorResponse:
 
         attachment = d.pop("attachment", UNSET)
 
+        saved = d.pop("saved", UNSET)
+
+        stage = d.pop("stage", UNSET)
+
+        copy_removed = d.pop("copyRemoved", UNSET)
+
+        deleted = cast(list[str], d.pop("deleted", UNSET))
+
+        kept = cast(list[str], d.pop("kept", UNSET))
+
+        checked = d.pop("checked", UNSET)
+
+        repeated = d.pop("repeated", UNSET)
+
+        pending = d.pop("pending", UNSET)
+
         error_response = cls(
             success=success,
             error=error,
@@ -155,6 +252,14 @@ class ErrorResponse:
             captcha_solve_error=captcha_solve_error,
             rejected_attachments=rejected_attachments,
             attachment=attachment,
+            saved=saved,
+            stage=stage,
+            copy_removed=copy_removed,
+            deleted=deleted,
+            kept=kept,
+            checked=checked,
+            repeated=repeated,
+            pending=pending,
         )
 
         error_response.additional_properties = d

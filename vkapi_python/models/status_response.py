@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.page_photos import PagePhotos
+
 
 T = TypeVar("T", bound="StatusResponse")
 
@@ -43,6 +47,21 @@ class StatusResponse:
         captcha_image (str | Unset): Only while paused for a captcha, for the account VK gave it to, once
             downloaded and for 5 minutes: a `data:image/(png|jpeg|gif);base64,...`
             URI. Answer it with `POST /session/resume` `captchaKey`. Example: data:image/png;base64,iVBORw0KGgo....
+        page_photos (PagePhotos | Unset): The photo work of the VK page, as this gateway did it for all the
+            page's accounts (since 2.5.0): in `GET /session/status` with a stored
+            token, and in the 200 answers of `POST /media/photo` and
+            `POST /album/photo` with that call counted. Only calls VK did count.
+            Another gateway on the same page is not seen. VK's real limits are
+            unknown: the gateway refuses nothing by these numbers, the caller
+            paces. Left out when the gateway's database fails to give them.
+
+            - `uploads`: new photos VK saved, `photos.save` (`POST /album/photo`)
+              and `photos.saveMessagesPhoto` (`POST /media/photo`), one pool of
+              VK's flood control;
+            - `copies`: `photos.copy`, a VK photo copied into the page's own
+              album;
+            - `captions`: `photos.edit`, the caption of a copy and
+              `POST /album/photo/edit`.
     """
 
     success: bool
@@ -57,6 +76,7 @@ class StatusResponse:
     upstream_code: str | Unset = UNSET
     captcha_solve_error: str | Unset = UNSET
     captcha_image: str | Unset = UNSET
+    page_photos: PagePhotos | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -84,6 +104,10 @@ class StatusResponse:
 
         captcha_image = self.captcha_image
 
+        page_photos: dict[str, Any] | Unset = UNSET
+        if not isinstance(self.page_photos, Unset):
+            page_photos = self.page_photos.to_dict()
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -109,11 +133,15 @@ class StatusResponse:
             field_dict["captchaSolveError"] = captcha_solve_error
         if captcha_image is not UNSET:
             field_dict["captchaImage"] = captcha_image
+        if page_photos is not UNSET:
+            field_dict["pagePhotos"] = page_photos
 
         return field_dict
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.page_photos import PagePhotos
+
         d = dict(src_dict)
         success = d.pop("success")
 
@@ -139,6 +167,13 @@ class StatusResponse:
 
         captcha_image = d.pop("captchaImage", UNSET)
 
+        _page_photos = d.pop("pagePhotos", UNSET)
+        page_photos: PagePhotos | Unset
+        if isinstance(_page_photos, Unset):
+            page_photos = UNSET
+        else:
+            page_photos = PagePhotos.from_dict(_page_photos)
+
         status_response = cls(
             success=success,
             connected=connected,
@@ -152,6 +187,7 @@ class StatusResponse:
             upstream_code=upstream_code,
             captcha_solve_error=captcha_solve_error,
             captcha_image=captcha_image,
+            page_photos=page_photos,
         )
 
         status_response.additional_properties = d

@@ -20,11 +20,13 @@ class AlbumPhotoUpload:
         album (str): `<owner_id>_<album_id>`, at most 16 KiB Example: -210132800_312370605.
         file (File): The image file
         caption (str | Unset): At most 2048 characters
+        ref (str | Unset): 2.5.0, as in the JSON body; the file's bytes stand for the photo
     """
 
     album: str
     file: File
     caption: str | Unset = UNSET
+    ref: str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -33,6 +35,8 @@ class AlbumPhotoUpload:
         file = self.file.to_tuple()
 
         caption = self.caption
+
+        ref = self.ref
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -44,6 +48,8 @@ class AlbumPhotoUpload:
         )
         if caption is not UNSET:
             field_dict["caption"] = caption
+        if ref is not UNSET:
+            field_dict["ref"] = ref
 
         return field_dict
 
@@ -56,6 +62,9 @@ class AlbumPhotoUpload:
 
         if not isinstance(self.caption, Unset):
             files.append(("caption", (None, str(self.caption).encode(), "text/plain")))
+
+        if not isinstance(self.ref, Unset):
+            files.append(("ref", (None, str(self.ref).encode(), "text/plain")))
 
         for prop_name, prop in self.additional_properties.items():
             files.append((prop_name, (None, str(prop).encode(), "text/plain")))
@@ -71,10 +80,13 @@ class AlbumPhotoUpload:
 
         caption = d.pop("caption", UNSET)
 
+        ref = d.pop("ref", UNSET)
+
         album_photo_upload = cls(
             album=album,
             file=file,
             caption=caption,
+            ref=ref,
         )
 
         album_photo_upload.additional_properties = d
